@@ -17,28 +17,28 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 const dbUrl = process.env.MONGODB_URI || 'mongodb://localhost/SkiIO';
 
 mongoose.connect(dbUrl, (err) => {
-    if (err) {
-        console.log('Could not connect to the database');
-        throw err;
-    }
+  if (err) {
+    console.log('Could not connect to the database');
+    throw err;
+  }
 });
 
 let redisURL = {
-    hostname: 'redis-15586.c89.us-east-1-3.ec2.cloud.redislabs.com',
-    port: '15586',
+  hostname: 'redis-15586.c89.us-east-1-3.ec2.cloud.redislabs.com',
+  port: '15586',
 };
 
 let redisPASS = 'S0hrI1LP3VrCFhhaX43bcZvPKOqUuMaU';
 
 if (process.env.REDISCLOUD_URL) {
-    redisURL = url.parse(process.env.REDISCLOUD_URL);
-    [, redisPASS] = redisURL.auth.split(':');
+  redisURL = url.parse(process.env.REDISCLOUD_URL);
+  [, redisPASS] = redisURL.auth.split(':');
 }
 
 const redisClient = redis.createClient({
-    host: redisURL.hostname,
-    port: redisURL.port,
-    password: redisPASS,
+  host: redisURL.hostname,
+  port: redisURL.port,
+  password: redisPASS,
 });
 
 const router = require('./router.js');
@@ -48,19 +48,19 @@ app.use('/assets', express.static(path.resolve(`${__dirname}/../hosted/`)));
 app.use(favicon(`${__dirname}/../hosted/img/favicon.png`));
 app.use(compression());
 app.use(bodyParser.urlencoded({
-    extended: true,
+  extended: true,
 }));
 app.use(session({
-    key: 'sessionid',
-    store: new RedisStore({
-        client: redisClient,
-    }),
-    secret: 'Skiier in IO',
-    resave: true,
-    saveUninitialized: true,
-    cookie: {
-        httpOnly: true,
-    },
+  key: 'sessionid',
+  store: new RedisStore({
+    client: redisClient,
+  }),
+  secret: 'Skiier in IO',
+  resave: true,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+  },
 }));
 app.engine('handlebars', expressHandlebars({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
@@ -70,18 +70,18 @@ app.use(cookieParser());
 
 app.use(csrf());
 app.use((err, req, res, next) => {
-    if (err.code !== 'EBADCSRFTOKEN') return next(err);
+  if (err.code !== 'EBADCSRFTOKEN') return next(err);
 
-    console.log('Missing csrf token');
-    return false;
+  console.log('Missing csrf token');
+  return false;
 });
 
 router(app);
 
 app.listen(port, (err) => {
-    if (err) {
-        throw err;
-    }
+  if (err) {
+    throw err;
+  }
 
-    console.log(`Listening on port ${port}`);
+  console.log(`Listening on port ${port}`);
 });

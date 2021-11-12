@@ -1,10 +1,10 @@
 const path = require('path')
 
 module.exports = {
-    entry: path.resolve(__dirname, 'client', 'index.js'),
+    entry: path.resolve(__dirname, 'client/login', 'index.js'),
     output: {
         path: path.resolve(__dirname, 'hosted'),
-        filename: 'bundle.js'
+        filename: 'loginBundle.js'
     },
     module: {
         rules: [
@@ -25,5 +25,6 @@ module.exports = {
                 }]
             }
         ]
-    }
+    },
+    mode: "development"
 }
