@@ -1,4 +1,4 @@
-const sendPost = (action, data) => {
+const sendPost = (action, data, error) => {
     return fetch(action, {
         method: 'post',
         cache: 'no-cache',
@@ -9,9 +9,9 @@ const sendPost = (action, data) => {
         },
         redirect: "follow",
         body: data
-    }).then(response => responseHandler(response));
+    }).then(response => responseHandler(response, error));
 }
-const sendGet = (action) => {
+const sendGet = (action, error) => {
     return fetch(action, {
         method: "get",
         cache: 'no-cache',
@@ -19,13 +19,25 @@ const sendGet = (action) => {
             'Accept': 'application/json',
         },
         redirect: "follow",
-    }).then(response => responseHandler(response));
+    }).then(response => responseHandler(response, error));
 }
 
-const responseHandler = (response) => {
+const responseHandler = (response, error) => {
     switch (response.status) {
         case 200:
             return response.json();
+
+        case 400:
+            error(response.json());
+            break;
+
+        case 401:
+            error(response.json());
+            break;
+
+        case 404:
+            error(response.json());
+            break;
     }
 }
 

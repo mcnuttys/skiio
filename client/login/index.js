@@ -4,23 +4,43 @@ import * as helper from '../helper'
 
 const handleLogin = (e) => {
     e.preventDefault();
-    console.log("Signing in!");
-    const errorMessage = document.querySelector("#errorMessage");;
+    
+    const form = e.target;
+    const username = form.elements["username"].value;
+    const password = form.elements["password"].value;
+    const csrf = form.elements["_csrf"].value;
+    const errorMessage = form.querySelector(".errorMessage");
 
+    if (username === '' || password === '') {
+        errorMessage.textContent = "Username and Password are required!";
+        return false;
+    }
+
+    errorMessage.textContent = "";
+
+    const data = { username: username, pass: password, _csrf: csrf };
+    helper.sendPost("/login", data, error).then((data) => {
+        console.dir(data);
+    });
+
+    const error = (err) => {
+        err.then(data => {
+            console.dir(data);
+        })
+    }
 
     return false;
 }
 
 const handleSignup = (e) => {
     e.preventDefault();
-    console.log("Signing up!");
-    const errorMessage = document.querySelector("#errorMessage");;
 
     const form = e.target;
     const username = form.elements["username"].value;
     const password = form.elements["password"].value;
     const password2 = form.elements["password2"].value;
     const csrf = form.elements["_csrf"].value;
+    const errorMessage = form.querySelector(".errorMessage");
 
     if (username === '' || password === '') {
         errorMessage.textContent = "Username and Password are required!";
@@ -33,7 +53,13 @@ const handleSignup = (e) => {
     }
     errorMessage.textContent = "";
     const data = { username: username, pass: password, pass2: password2, _csrf: csrf };
-    helper.sendPost("/signup", data);
+    helper.sendPost("/signup", data, error);
+
+    const error = (err) => {
+        err.then(data => {
+            console.dir(data);
+        })
+    }
 
     return false;
 }
@@ -51,6 +77,9 @@ const Login = (props) => {
 
             <label htmlFor="username">Password:</label>
             <input className="u-full-width" type="password" placeholder="Enter Password Here..." name="password" />
+
+            <p name="errorMessage" className="errorMessage"></p>
+
             <input type="hidden" name="_csrf" value={props.csrf} />
             <input className="button-primary" type="submit" value="Login" />
         </form>
@@ -73,6 +102,9 @@ const Signup = (props) => {
 
             <label htmlFor="username">Re-Type Password:</label>
             <input className="u-full-width" type="password" placeholder="Re-Type Password Here..." name="password2" />
+
+            <p className="errorMessage">Test Error Message</p>
+
             <input type="hidden" name="_csrf" value={props.csrf} />
             <input className="button-primary" type="submit" value="Sign up" />
         </form>
