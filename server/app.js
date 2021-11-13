@@ -76,6 +76,8 @@ app.use((err, req, res, next) => {
   return false;
 });
 
+app.use(express.json());
+
 router(app);
 
 app.listen(port, (err) => {

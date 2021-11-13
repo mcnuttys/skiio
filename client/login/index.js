@@ -4,7 +4,7 @@ import * as helper from '../helper'
 
 const handleLogin = (e) => {
     e.preventDefault();
-    
+
     const form = e.target;
     const username = form.elements["username"].value;
     const password = form.elements["password"].value;
@@ -18,16 +18,18 @@ const handleLogin = (e) => {
 
     errorMessage.textContent = "";
 
-    const data = { username: username, pass: password, _csrf: csrf };
-    helper.sendPost("/login", data, error).then((data) => {
-        console.dir(data);
-    });
-
-    const error = (err) => {
+    const loginError = (err) => {
         err.then(data => {
-            console.dir(data);
+            errorMessage.textContent = data.error;
         })
     }
+
+    const data = { username: username, pass: password, _csrf: csrf };
+    helper.sendPost("/login", data, loginError).then((data) => {
+        if (data === undefined) return;
+
+        window.location.assign(data.redirect);
+    });
 
     return false;
 }
@@ -52,14 +54,19 @@ const handleSignup = (e) => {
         return false;
     }
     errorMessage.textContent = "";
-    const data = { username: username, pass: password, pass2: password2, _csrf: csrf };
-    helper.sendPost("/signup", data, error);
 
-    const error = (err) => {
+    const signupError = (err) => {
         err.then(data => {
-            console.dir(data);
+            errorMessage.textContent = data.error;
         })
     }
+
+    const data = { username: username, pass: password, pass2: password2, _csrf: csrf };
+    helper.sendPost("/signup", data, signupError).then(data => {
+        if (data === undefined) return;
+
+        window.location.assign(data.redirect);
+    });
 
     return false;
 }
@@ -103,7 +110,7 @@ const Signup = (props) => {
             <label htmlFor="username">Re-Type Password:</label>
             <input className="u-full-width" type="password" placeholder="Re-Type Password Here..." name="password2" />
 
-            <p className="errorMessage">Test Error Message</p>
+            <p className="errorMessage"></p>
 
             <input type="hidden" name="_csrf" value={props.csrf} />
             <input className="button-primary" type="submit" value="Sign up" />
