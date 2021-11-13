@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "webpackLogin": "webpack --config webpack.config.js --entry ./client/login/index.js --output-filename loginBundle.js -o ./hosted",
+    "webpackLogin": "webpack --config webpack.config.js --entry ./client/login/login.js --output-filename loginBundle.js -o ./hosted",
+    "webpackMain": "webpack --config webpack.config.js --entry ./client/app/main.js --output-filename appBundle.js -o ./hosted",
     "start": "node ./server/app.js",
     "pretest": "eslint ./server --fix",
     "test": "echo \"Tests complete\""

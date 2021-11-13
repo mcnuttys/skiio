@@ -1,5 +1,2 @@
 module.exports.Account = require('./Account.js');
-
-module.exports.main = (req, res) => {
-  res.render('app');
-};
+module.exports.Main = require('./main.js');

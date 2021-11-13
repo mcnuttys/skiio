@@ -1,0 +1,19 @@
+.container {
+    text-align: center;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h4 {
+    font-weight: bold;
+}
+
+form label {
+    text-align: left;
+}
+
+.errorMessage {
+    color: red;
+}

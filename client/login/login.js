@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import * as helper from '../helper'
+import * as helper from '../helper/helper.js'
 
 const handleLogin = (e) => {
     e.preventDefault();

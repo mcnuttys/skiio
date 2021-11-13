@@ -1,0 +1,15 @@
+.container {
+    text-align: center;
+}
+
+#headerBar {
+    margin: 1rem;
+}
+
+form label {
+    text-align: left;
+}
+
+.errorMessage {
+    color: red;
+}

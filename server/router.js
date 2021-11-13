@@ -7,6 +7,8 @@ const router = (app) => {
   app.get('/login', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
   app.post('/login', mid.requiresSecure, mid.requiresLogout, controllers.Account.login);
   app.post('/signup', mid.requiresSecure, mid.requiresLogout, controllers.Account.signup);
+  app.get('/main', mid.requiresSecure, mid.requiresLogin, controllers.Main.mainPage);
+  app.get('/logout', mid.requiresLogin, controllers.Account.logout);
 
   app.get('/', mid.requiresLogout, controllers.Account.loginPage);
 };
