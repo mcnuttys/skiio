@@ -2,8 +2,18 @@
     text-align: center;
 }
 
-#headerBar {
+#titleBar {
     margin: 1rem;
+}
+
+#headerBar .button {
+    width: 20%;
+    margin-left: 5rem;
+    margin-right: 5rem;
+
+    border-top: none;
+    border-left: none;
+    border-right: none;
 }
 
 form label {

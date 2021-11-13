@@ -4,6 +4,9 @@ const mid = require('./middleware');
 const router = (app) => {
   app.get('/getToken', mid.requiresSecure, controllers.Account.getToken);
 
+  app.get('/leaderboard', mid.requiresSecure, controllers.Leaderboard.getLeaderboard);
+  app.post('/leaderboard', mid.requiresSecure, controllers.Leaderboard.addLeaderboardEntry);
+
   app.get('/login', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
   app.post('/login', mid.requiresSecure, mid.requiresLogout, controllers.Account.login);
   app.post('/signup', mid.requiresSecure, mid.requiresLogout, controllers.Account.signup);
