@@ -1,8 +1,11 @@
 const controllers = require('./controllers');
 const mid = require('./middleware');
+const game = require('./game');
 
 const router = (app) => {
   app.get('/getToken', mid.requiresSecure, controllers.Account.getToken);
+
+  app.get('/slopes', mid.requiresSecure, game.getSlopes);
 
   app.get('/leaderboard', mid.requiresSecure, controllers.Leaderboard.getLeaderboard);
   app.post('/leaderboard', mid.requiresSecure, controllers.Leaderboard.addLeaderboardEntry);

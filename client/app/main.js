@@ -1,4 +1,3 @@
-import { permittedCrossDomainPolicies } from 'helmet';
 import React from 'react'
 import ReactDOM from 'react-dom'
 import * as helper from "../helper/helper.js";
@@ -6,12 +5,17 @@ import * as helper from "../helper/helper.js";
 const Main = (props) => {
     return (
         <div className="container">
+            <div class="row" id="headerBar">
+                <a class="button" id="marketButton" onClick={() => { console.dir("clicked market") }} >Market</a>
+                <a class="button" id="gameButton" onClick={() => { console.dir("clicked game") }} >Game</a>
+                <a class="button" id="profileButton" onClick={() => { console.dir("clicked profile") }} >Profile</a>
+            </div>
             <div className="row">
-                <div className="two-thirds column">
+                <div className="one-half column">
                     <div className="row">
                         <h4 className="one-half column">Leaderboard</h4>
                         <select id="filterDropdown" onChange={updateLeaderboard} >
-                            <option value="unset">Unset</option>
+                            <option value="unset">All</option>
                             <option value="Alpine">Alpine</option>
                             <option value="Mountain">Mountain</option>
                         </select>
@@ -19,12 +23,51 @@ const Main = (props) => {
                     <div id="leaderboard"></div>
                 </div>
 
-                <div className="one-third column">
-                    <h2>Game</h2>
+                <div className="one-half column">
+                    <div className="row">
+                        <h4 className="one-half column">Open Resorts</h4>
+                        <a className="button" onClick={drawSlopes}>Refresh</a>
+                    </div>
+                    <div id="slopesList"></div>
                 </div>
             </div>
         </div>
     )
+}
+
+const Slopes = (props) => {
+    if (!props.slopes || props.slopes.length <= 0) {
+        return (
+            <p>No slopes are open right now!</p>
+        );
+    }
+
+    return (
+        <table className="u-full-wdith">
+            <thead>
+                <tr>
+                    <th>Resort Name</th>
+                    <th>Terrain Type</th>
+                    <th>Skiier Count</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {props.slopes.map(slope => {
+                    return (
+                        <tr>
+                            <td>{slope.name}</td>
+                            <td>{slope.type}</td>
+                            <td>{slope.playerCount}</td>
+                            <td><a className="button" onClick={() => {
+                                console.dir("Join slope: " + slope.name)
+                            }}>Join Slope</a></td>
+                        </tr>
+                    );
+                })}
+            </tbody>
+        </table >
+    );
 }
 
 const Leaderboard = (props) => {
@@ -49,34 +92,28 @@ const Leaderboard = (props) => {
                     <th>Score</th>
                 </tr>
             </thead>
-            {props.leaderboard.map(entry => {
-                return (
-                    <tbody>
+            <tbody>
+                {props.leaderboard.map(entry => {
+                    return (
                         <tr>
                             <td>{entry.name}</td>
                             <td>{entry.type}</td>
                             <td>{entry.score}</td>
                         </tr>
-                    </tbody>
-                );
-            })}
+                    );
+                })}
+            </tbody>
         </table>
     )
 }
 
 const updateLeaderboard = (e) => {
     const action = `/leaderboard${(e.target.value != 'unset') ? "?filter=" + e.target.value : ''}`;
-    if (e.target.value === 'unset') {
-        helper.sendGet("/leaderboard").then(data => {
-            ReactDOM.render(<Leaderboard leaderboard={data.leaderboard} />, document.querySelector("#leaderboard"));
-        });
-    } else {
-        helper.sendGet("/leaderboard?filter=" + e.target.value).then(data => {
-            ReactDOM.render(<Leaderboard leaderboard={data.leaderboard} />, document.querySelector("#leaderboard"));
-        });
-    }
-
+    helper.sendGet(action).then(data => {
+        ReactDOM.render(<Leaderboard leaderboard={data.leaderboard} />, document.querySelector("#leaderboard"));
+    });
 }
+
 const drawLeaderboard = () => {
     ReactDOM.render(<Leaderboard />, document.querySelector("#leaderboard"));
 
@@ -85,18 +122,20 @@ const drawLeaderboard = () => {
     });
 }
 
+const drawSlopes = () => {
+    ReactDOM.render(<Slopes />, document.querySelector('#slopesList'));
+
+    helper.sendGet("/slopes").then(data => {
+        console.dir(data.slopes);
+        ReactDOM.render(<Slopes slopes={data.slopes} />, document.querySelector('#slopesList'));
+    });
+}
+
 const setup = (csrf) => {
     ReactDOM.render(<Main />, document.querySelector("#content"));
 
     drawLeaderboard();
-
-    document.querySelector("#addButton").addEventListener("click", (e) => {
-        e.preventDefault();
-
-        helper.sendPost("/leaderboard", { name: "Test", type: "Alpine", score: Math.random() * 100, _csrf: csrf });
-
-        return false;
-    })
+    drawSlopes();
 }
 
 const getToken = () => {
@@ -104,5 +143,5 @@ const getToken = () => {
 }
 
 window.onload = () => {
-    getToken();
+    setup();
 }
