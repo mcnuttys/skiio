@@ -33,7 +33,7 @@ const MarketItems = (props) => {
                 return (
                     <div className="marketItem">
                         <div className="container">
-                            <img src={item.path + "/icon.png"} />
+                            <img src={"/assets/img/" + item.type + "" + item.path + "/icon.png"} />
                             <h5>{item.name}</h5>
                             <button type="button" class="button-primary" onClick={(e) => {
                                 console.log("Purchase " + item.name);
@@ -46,8 +46,11 @@ const MarketItems = (props) => {
     )
 }
 
-const updateMarket = () => {
-
+const updateMarket = (e) => {
+    const action = `/market${(e.target.value != 'unset') ? "?filter=" + e.target.value : ''}`;
+    helper.sendGet(action).then(data => {
+        ReactDOM.render(<Market market={data.market} />, document.querySelector("#content"));
+    });
 }
 
 const drawMarket = () => {

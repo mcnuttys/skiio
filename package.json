@@ -7,6 +7,7 @@
     "start": "node ./server/app.js",
     "webpackLogin": "webpack --config webpack.config.js --entry ./client/login/login.js --output-filename loginBundle.js -o ./hosted",
     "webpackMain": "webpack --config webpack.config.js --entry ./client/app/main.js --output-filename appBundle.js -o ./hosted",
+    "webpackAdmin": "webpack --config webpack.config.js --entry ./client/helper/admin.js --output-filename adminBundle.js -o ./hosted",
     "pretest": "eslint ./server --fix",
     "test": "echo \"Tests complete\""
   },
