@@ -8,8 +8,8 @@
 
 #headerBar .button {
     width: 20%;
-    margin-left: 5rem;
-    margin-right: 5rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
 
     border-top: none;
     border-left: none;
@@ -22,4 +22,28 @@ form label {
 
 .errorMessage {
     color: red;
+}
+
+#marketItems {
+    width: 100%;
+    
+    display: flex;
+    flex-direction: row;
+}
+
+.marketItem {
+    margin: 1rem;
+    padding: 1rem;
+    width: 15rem;
+
+    border: 1px lightgray solid;
+    border-radius: 0.5rem;
+}
+
+.marketItem p {
+    margin-bottom: 0;
+}
+
+.marketItem img {
+    width: 100%;
 }

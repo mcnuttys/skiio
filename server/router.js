@@ -7,6 +7,8 @@ const router = (app) => {
 
   app.get('/slopes', mid.requiresSecure, game.getSlopes);
 
+  app.get('/market', mid.requiresSecure, controllers.Market.getMarket);
+
   app.get('/leaderboard', mid.requiresSecure, controllers.Leaderboard.getLeaderboard);
   app.post('/leaderboard', mid.requiresSecure, controllers.Leaderboard.addLeaderboardEntry);
 
