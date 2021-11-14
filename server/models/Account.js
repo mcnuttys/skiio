@@ -28,6 +28,10 @@ const AccountSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  ownedItems: {
+    type: [String],
+    ref: 'Market',
+  },
 });
 
 AccountSchema.statics.toAPI = (doc) => ({

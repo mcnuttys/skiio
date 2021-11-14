@@ -54,6 +54,7 @@ const signup = (request, response) => {
       username: req.body.username,
       salt,
       password: hash,
+      ownedItems: [],
     };
 
     const newAccount = new Account.AccountModel(accountData);
@@ -76,6 +77,25 @@ const signup = (request, response) => {
   });
 };
 
+const getProfile = async (req, res) => {
+  const profile = await Account.AccountModel.findOne({ _id: req.session.account._id }).lean();
+
+  if (profile === undefined) {
+    return res.status(404).json({ error: 'Could not find profile...' });
+  }
+
+  return res.status(200).json(
+    {
+      profile:
+      {
+        username: profile.username,
+        ownedItems: profile.ownedItems,
+        createdDate: profile.createdDate,
+      },
+    },
+  );
+};
+
 const getToken = (request, response) => {
   const req = request;
   const res = response;
@@ -91,4 +111,5 @@ module.exports.loginPage = loginPage;
 module.exports.logout = logout;
 module.exports.login = login;
 module.exports.signup = signup;
+module.exports.getProfile = getProfile;
 module.exports.getToken = getToken;

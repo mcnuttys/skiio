@@ -1,6 +1,7 @@
 const models = require('../models');
 
 const { Market } = models;
+const { Account } = models;
 
 const getMarket = (req, res) => {
   if (!req.query.filter) {
@@ -35,5 +36,24 @@ const addMarketItem = (req, res) => {
   return newEntry;
 };
 
+const purchaseMarketItem = async (req, res) => {
+  if (!req.body.id) {
+    return res.status(400).json({ error: 'The ID of the item purchased is required!' });
+  }
+
+  const account = await Account.AccountModel.findOne({ _id: req.session.account._id });
+
+  if (account.ownedItems === undefined) account.ownedItems = [];
+
+  if (account.ownedItems.find((id) => id === req.body.id)) return res.status(400).json({ error: 'The user already owns this item!' });
+
+  account.ownedItems.push(req.body.id);
+
+  await account.save();
+
+  return account;
+};
+
 module.exports.getMarket = getMarket;
 module.exports.addMarketItem = addMarketItem;
+module.exports.purchaseMarketItem = purchaseMarketItem;

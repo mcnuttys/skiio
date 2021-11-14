@@ -7,8 +7,11 @@ const router = (app) => {
 
   app.get('/slopes', mid.requiresSecure, game.getSlopes);
 
+  app.get('/getProfile', mid.requiresSecure, mid.requiresLogin, controllers.Account.getProfile);
+
   app.get('/market', mid.requiresSecure, controllers.Market.getMarket);
   app.post('/market', mid.requiresSecure, controllers.Market.addMarketItem);
+  app.post('/buyItem', mid.requiresSecure, controllers.Market.purchaseMarketItem);
 
   app.get('/leaderboard', mid.requiresSecure, controllers.Leaderboard.getLeaderboard);
   app.post('/leaderboard', mid.requiresSecure, controllers.Leaderboard.addLeaderboardEntry);
