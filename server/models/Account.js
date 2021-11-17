@@ -32,6 +32,14 @@ const AccountSchema = new mongoose.Schema({
     type: [String],
     ref: 'Market',
   },
+  equipedAvatar: {
+    type: String,
+    default: 'default',
+  },
+  equipedTerrain: {
+    type: String,
+    default: 'default',
+  },
 });
 
 AccountSchema.statics.toAPI = (doc) => ({

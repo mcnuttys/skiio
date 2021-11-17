@@ -8,7 +8,7 @@ const Market = (props) => {
         <div className="container">
             <div className="row">
                 <h4 className="one-half column">Ski Shop</h4>
-                <select id="filterDropdown" onChange={(e) => { updateMarket(e, props.csrf) }} >
+                <select id="filterDropdown" onChange={(e) => { updateMarket(e.target.value, props.csrf) }} >
                     <option value="unset">All</option>
                     <option value="terrain">Terrain Packs</option>
                     <option value="avatar">Avatars</option>
@@ -27,19 +27,17 @@ const MarketItems = (props) => {
     }
 
     return (
-        <div id="marketItems">
-            {props.market.map(item => {
-                return (
-                    <div className="marketItem">
-                        <div className="container">
-                            <img src={"/assets/img/" + item.type + "" + item.path + "/icon.png"} />
-                            <h5>{item.name}</h5>
-                            {purchaseItemButton(props, item)}
-                        </div>
+        props.market.map(item => {
+            return (
+                <div className="marketItem">
+                    <div className="container">
+                        <img src={"/assets/img/" + item.type + "" + item.path + "/icon.png"} />
+                        <h5>{item.name}</h5>
+                        {purchaseItemButton(props, item)}
                     </div>
-                )
-            })}
-        </div>
+                </div>
+            )
+        })
     )
 }
 
@@ -54,17 +52,14 @@ const purchaseItemButton = (props, item) => {
 
     return (
         <button type="button" class="button-primary" onClick={async (e) => {
-            helper.sendPost("/buyItem", { id: item._id, _csrf: props.csrf });
-
-            e.target.className = "button";
-            e.target.textContent = "Owned";
-            e.target.onClick = null;
+            await helper.sendPost("/buyItem", { id: item._id, _csrf: props.csrf });
+            updateMarket('unset', props.csrf);
         }}>Buy</button>
     )
 }
 
-const updateMarket = (e, csrf) => {
-    const action = `/market${(e.target.value != 'unset') ? "?filter=" + e.target.value : ''}`;
+const updateMarket = (filter, csrf) => {
+    const action = `/market${(filter != 'unset') ? "?filter=" + filter : ''}`;
     console.dir("update");
     helper.sendGet(action).then(async (data) => {
         await profile.getProfileData();

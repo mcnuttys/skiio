@@ -33,6 +33,7 @@ const addMarketItem = (req, res) => {
     return res.status(400).json({ error: 'An error occured!' });
   });
 
+  res.status(200).json({ message: 'Successfully added item...' });
   return newEntry;
 };
 
@@ -51,6 +52,7 @@ const purchaseMarketItem = async (req, res) => {
 
   await account.save();
 
+  res.status(200).json({ message: 'Successfully added item...' });
   return account;
 };
 

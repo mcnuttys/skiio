@@ -1,6 +1,6 @@
 const models = require('../models');
 
-const { Account } = models;
+const { Account, Market } = models;
 
 const loginPage = (req, res) => {
   res.render('login');
@@ -80,6 +80,8 @@ const signup = (request, response) => {
 const getProfile = async (req, res) => {
   const profile = await Account.AccountModel.findOne({ _id: req.session.account._id }).lean();
 
+  const ownedItems = await Market.MarketModel.find({ _id: { $in: profile.ownedItems } }).lean();
+
   if (profile === undefined) {
     return res.status(404).json({ error: 'Could not find profile...' });
   }
@@ -89,11 +91,37 @@ const getProfile = async (req, res) => {
       profile:
       {
         username: profile.username,
-        ownedItems: profile.ownedItems,
+        ownedItems,
         createdDate: profile.createdDate,
+        equipedAvatar: profile.equipedAvatar,
+        equipedTerrain: profile.equipedTerrain,
       },
     },
   );
+};
+
+const equipItem = async (req, res) => {
+  if (req.body.id === '' || req.body.type === '') return res.status(400).json({ error: 'id and type required' });
+
+  const profile = await Account.AccountModel.findOne({ _id: req.session.account._id });
+
+  switch (req.body.type) {
+    case 'terrain':
+      profile.equipedTerrain = req.body.id;
+      break;
+
+    case 'avatar':
+      profile.equipedAvatar = req.body.id;
+      break;
+
+    default:
+      return res.status(500).json({ error: 'The type was no valid?' });
+  }
+
+  await profile.save();
+
+  res.status(200).json({ message: 'Successfully equiped item...' });
+  return profile;
 };
 
 const getToken = (request, response) => {
@@ -112,4 +140,5 @@ module.exports.logout = logout;
 module.exports.login = login;
 module.exports.signup = signup;
 module.exports.getProfile = getProfile;
+module.exports.equipItem = equipItem;
 module.exports.getToken = getToken;

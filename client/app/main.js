@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import * as helper from "../helper/helper.js";
 import * as leaderboard from "./leaderboard.js";
 import * as market from "./market.js";
+import * as profile from "./profile.js";
 
 const Main = (props) => {
     return (
@@ -11,7 +12,7 @@ const Main = (props) => {
                 <button type="button" class="button" id="marketButton" onClick={() => { console.dir("clicked market"); market.drawMarket(); }} >Market</button>
                 <button type="button" class="button" id="leaderboardButton" onClick={() => { console.dir("clicked leaderboard"); leaderboard.drawLeaderboard(); }} >Leaderboards</button>
                 <button type="button" class="button" id="gameButton" onClick={() => { console.dir("clicked game"); drawMain(); }} >Game</button>
-                <button type="button" class="button" id="profileButton" onClick={() => { console.dir("clicked profile") }} >Profile</button>
+                <button type="button" class="button" id="profileButton" onClick={() => { console.dir("clicked profile"); profile.drawProfile(); }} >Profile</button>
             </div>
         </div>
     )
