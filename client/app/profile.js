@@ -9,11 +9,11 @@ const Profile = (props) => {
         <div className="container">
             <h4>{props.profile.username}</h4>
             <h5>
-                {(!equipedAvatar) ? "Default" : equipedAvatar.name}
+                Avatar: {(!equipedAvatar) ? "Default" : equipedAvatar.name}
                 {(!equipedAvatar) ? "" : (<img src={"/assets/img/" + equipedAvatar.type + "" + equipedAvatar.path + "/icon.png"} />)}
             </h5>
             <h5>
-                {(!equipedTerrain) ? "Default" : equipedTerrain.name}
+                Terrain Pack: {(!equipedTerrain) ? "Default" : equipedTerrain.name}
                 {(!equipedTerrain) ? "" : (<img src={"/assets/img/" + equipedTerrain.type + "" + equipedTerrain.path + "/icon.png"} />)}
             </h5>
             <h5>Owned Items</h5>
