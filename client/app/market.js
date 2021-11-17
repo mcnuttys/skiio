@@ -1,5 +1,3 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
 import * as helper from "../helper/helper.js";
 import * as profile from "./profile.js";
 

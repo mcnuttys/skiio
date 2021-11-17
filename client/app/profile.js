@@ -1,5 +1,3 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
 import * as helper from "../helper/helper.js";
 
 let profileData;
@@ -11,12 +9,12 @@ const Profile = (props) => {
         <div className="container">
             <h4>{props.profile.username}</h4>
             <h5>
-                Avatar: {equipedAvatar.name || "Default"}
-                <img src={"/assets/img/" + equipedAvatar.type + "" + equipedAvatar.path + "/icon.png"} />
+                {(!equipedAvatar) ? "Default" : equipedAvatar.name}
+                {(!equipedAvatar) ? "" : (<img src={"/assets/img/" + equipedAvatar.type + "" + equipedAvatar.path + "/icon.png"} />)}
             </h5>
             <h5>
-                Terrain Pack: {equipedTerrain.name || "Default"}
-                <img src={"/assets/img/" + equipedAvatar.type + "" + equipedAvatar.path + "/icon.png"} />
+                {(!equipedTerrain) ? "Default" : equipedTerrain.name}
+                {(!equipedTerrain) ? "" : (<img src={"/assets/img/" + equipedTerrain.type + "" + equipedTerrain.path + "/icon.png"} />)}
             </h5>
             <h5>Owned Items</h5>
             <div className="u-full-width" id="marketItems">
@@ -52,12 +50,12 @@ const OwnedItems = (props) => {
 const equipItemButton = (props, item) => {
     if (item._id === profileData.equipedAvatar || item._id === profileData.equipedTerrain) {
         return (
-            <button type="button" class="button" >Equiped</button>
+            <button type="button" className="button" >Equiped</button>
         );
     }
 
     return (
-        <button type="button" class="button-primary" onClick={async (e) => {
+        <button type="button" className="button-primary" onClick={async (e) => {
             await helper.sendPost("/equipItem", { id: item._id, type: item.type, _csrf: props.csrf });
             drawProfile();
         }}>Equip</button>

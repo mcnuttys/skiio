@@ -1,5 +1,3 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
 import * as helper from "../helper/helper.js";
 import * as leaderboard from "./leaderboard.js";
 import * as market from "./market.js";
