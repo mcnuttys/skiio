@@ -1,5 +1,3 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
 import * as helper from "../helper/helper.js";
 
 const addLeaderboardEntry = (e) => {
