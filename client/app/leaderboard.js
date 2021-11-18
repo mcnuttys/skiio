@@ -54,7 +54,7 @@ const Leaderboard = (props) => {
                 <tbody>
                     {props.leaderboard.map(entry => {
                         return (
-                            <tr>
+                            <tr key={entry._id}>
                                 <td>{entry.name}</td>
                                 <td>{entry.type}</td>
                                 <td>{entry.score}</td>
