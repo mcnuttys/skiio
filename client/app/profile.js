@@ -35,7 +35,7 @@ const OwnedItems = (props) => {
     return (
         props.profile.ownedItems.map(item => {
             return (
-                <div className="marketItem">
+                <div className="marketItem" key={item._id}>
                     <div className="container">
                         <img src={"/assets/img/" + item.type + "" + item.path + "/icon.png"} />
                         <h5>{item.name}</h5>
@@ -88,4 +88,20 @@ const drawProfile = async () => {
     ReactDOM.render(<OwnedItems profile={profileData} csrf={crsf} />, document.querySelector("#marketItems"));
 }
 
-export { drawProfile, getProfileData, ownsItem }
+const getEquipedAvatar = async () => {
+    if (!profileData) {
+        await getProfileData();
+    }
+
+    return equipedAvatar;
+}
+
+const getEquipedTerrain = async () => {
+    if (!profileData) {
+        await getProfileData();
+    }
+
+    return equipedTerrain;
+}
+
+export { drawProfile, getProfileData, ownsItem, getEquipedAvatar, getEquipedTerrain }

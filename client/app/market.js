@@ -27,7 +27,7 @@ const MarketItems = (props) => {
     return (
         props.market.map(item => {
             return (
-                <div className="marketItem">
+                <div className="marketItem" key={item._id}>
                     <div className="container">
                         <img src={"/assets/img/" + item.type + "" + item.path + "/icon.png"} />
                         <h5>{item.name}</h5>
@@ -44,12 +44,12 @@ const purchaseItemButton = (props, item) => {
 
     if (ownsItem) {
         return (
-            <button type="button" class="button" >Owned</button>
+            <button type="button" className="button" >Owned</button>
         );
     }
 
     return (
-        <button type="button" class="button-primary" onClick={async (e) => {
+        <button type="button" className="button-primary" onClick={async (e) => {
             await helper.sendPost("/buyItem", { id: item._id, _csrf: props.csrf });
             updateMarket('unset', props.csrf);
         }}>Buy</button>
