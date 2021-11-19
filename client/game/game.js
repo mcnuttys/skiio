@@ -2,12 +2,16 @@ import * as profile from "../app/profile.js"
 import * as camera from "./camera.js"
 import * as input from "./inputManager.js"
 
+import Player from "./player.js"
+
 let canvas, ctx;
 
 let size = { width: 600, height: 600 };
 
 let avatarSprites = {};
 let terrainSpritesheet;
+
+let player;
 
 const Canvas = (props) => {
     return (
@@ -21,8 +25,11 @@ const setup = async () => {
     input.setup();
 
     // Load textures and stuff...
-    // let avatar = await profile.getEquipedAvatar;
+    let avatar = await profile.getEquipedAvatar();
     let terrainPack = await profile.getEquipedTerrain();
+
+    avatarSprites[avatar._id] = new Image();
+    avatarSprites[avatar._id].src = `/assets/img/terrain${avatar.path}/sprite.png`;
 
     terrainSpritesheet = new Image();
     terrainSpritesheet.src = `/assets/img/terrain${terrainPack.path}/spritesheet.png`;
@@ -38,6 +45,8 @@ const setup = async () => {
     ctx.mozImageSmoothingEnabled = false;
     ctx.webkitImageSmoothingEnabled = false;
     ctx.msImageSmoothingEnabled = false;
+
+    
 
     loop();
 }
