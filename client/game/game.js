@@ -2,7 +2,7 @@ import * as profile from "../app/profile.js"
 import * as camera from "./camera.js"
 import * as input from "./inputManager.js"
 
-import Player from "./player.js"
+import { Player } from "./player.js"
 
 let canvas, ctx;
 
@@ -29,7 +29,7 @@ const setup = async () => {
     let terrainPack = await profile.getEquipedTerrain();
 
     avatarSprites[avatar._id] = new Image();
-    avatarSprites[avatar._id].src = `/assets/img/terrain${avatar.path}/sprite.png`;
+    avatarSprites[avatar._id].src = `/assets/img/avatar${avatar.path}/sprite.png`;
 
     terrainSpritesheet = new Image();
     terrainSpritesheet.src = `/assets/img/terrain${terrainPack.path}/spritesheet.png`;
@@ -46,12 +46,12 @@ const setup = async () => {
     ctx.webkitImageSmoothingEnabled = false;
     ctx.msImageSmoothingEnabled = false;
 
-    
+    player = new Player(4.5, 5.5, avatarSprites[avatar._id]);
 
     loop();
 }
 
-let dt = 0;
+let dt = 1 / 60;
 const loop = () => {
     requestAnimationFrame(loop);
 
@@ -68,39 +68,30 @@ const loop = () => {
         }
     }
 
-    ctx.drawImage(terrainSpritesheet, 16, 16, 16, 16, 0, 0, camera.tileSize, camera.tileSize);
+    // ctx.drawImage(terrainSpritesheet, 16, 16, 16, 16, 0, 0, camera.tileSize, camera.tileSize);
+    // ctx.drawImage(avatarSprites["defaultavatar"], 16, 0, camera.tileSize, camera.tileSize);
+
+    // console.dir(avatarSprites["defaultavatar"]);
 
     // camera.setPosition({ x: Math.cos(dt), y: Math.sin(dt) });
 
-    let px = 0, py = 0;
-    if (input.isKeyDown("w"))
-        py += 1 * (1 / 60);
-    if (input.isKeyDown("s"))
-        py += -1 * (1 / 60);
+    // let px = 0, py = 0;
+    // if (input.isKeyDown("w"))
+    //     py += 1 * (1 / 60);
+    // if (input.isKeyDown("s"))
+    //     py += -1 * (1 / 60);
 
-    if (input.isKeyDown("d"))
-        px += 1 * (1 / 60);
-    if (input.isKeyDown("a"))
-        px += -1 * (1 / 60);
+    // if (input.isKeyDown("d"))
+    //     px += 1 * (1 / 60);
+    // if (input.isKeyDown("a"))
+    //     px += -1 * (1 / 60);
 
-    camera.setPosition(camera.camX + px, camera.camY + py);
+    // camera.setPosition(camera.camX + px, camera.camY + py);
 
-    ctx.save();
+    player.update(dt);
 
-    let center = camera.toScreenSpace(0, 0);
-    let cPos = camera.toScreenSpace(camera.camX, camera.camY);
-
-    ctx.strokeStyle = "black";
-    ctx.fillStyle = "red";
-    ctx.beginPath();
-    ctx.arc(center.x, center.y, camera.tileSize / 8, 0, Math.PI * 2);
-    ctx.moveTo(center.x, center.y)
-    ctx.lineTo(cPos.x, cPos.y)
-    ctx.closePath();
-    ctx.stroke();
-    ctx.fill();
-    ctx.restore();
-    dt += 1 / 60;
+    camera.setPosition(player.x - 4.5, player.y - 5.5);
+    player.draw(ctx);
 }
 
 export { setup }

@@ -6,6 +6,7 @@ const router = (app) => {
   app.get('/getToken', mid.requiresSecure, controllers.Account.getToken);
 
   app.get('/slopes', mid.requiresSecure, game.getSlopes);
+  app.post('/createResort', mid.requiresSecure, game.createSlope)
 
   app.get('/getProfile', mid.requiresSecure, mid.requiresLogin, controllers.Account.getProfile);
   app.post('/equipItem', mid.requiresSecure, mid.requiresLogin, controllers.Account.equipItem);

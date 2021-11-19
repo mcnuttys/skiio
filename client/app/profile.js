@@ -66,6 +66,10 @@ const equipItemButton = (props, item) => {
 const getProfileData = async () => {
     const data = await helper.sendGet("/getProfile");
     profileData = data.profile;
+
+    profileData.ownedItems.push({ _id: "defaultavatar", name: "Default Avatar", type: "avatar", path: "/default" });
+    profileData.ownedItems.push({ _id: "defaultterrain", name: "Default Terrain", type: "terrain", path: "/default" });
+
     equipedAvatar = profileData.ownedItems.find(id => id._id === profileData.equipedAvatar);
     equipedTerrain = profileData.ownedItems.find(id => id._id === profileData.equipedTerrain);
 

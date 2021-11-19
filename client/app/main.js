@@ -31,7 +31,7 @@ const Slopes = (props) => {
                             <th>Resort Name</th>
                             <th>Terrain Type</th>
                             <th>Skiier Count</th>
-                            <th><a className="button button-primary">Open Resort</a></th>
+                            <th><a className="button button-primary" onClick={openResortButton}>Open Resort</a></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -59,7 +59,7 @@ const Slopes = (props) => {
                         <th>Resort Name</th>
                         <th>Terrain Type</th>
                         <th>Skiier Count</th>
-                        <th><button type="button" className="button-primary">Create Resort</button></th>
+                        <th><button type="button" className="button-primary" onClick={openResortButton}>Open Resort</button></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -81,6 +81,43 @@ const Slopes = (props) => {
     );
 }
 
+const OpenResort = (props) => {
+    return (
+        <div className="u-full-width">
+            <h4>Open Resort</h4>
+            <label htmlFor="resortName">Resort Name:</label>
+            <input type="text" id="resortName" placeholder="Enter resort name here..."></input>
+            <label htmlFor="resortType">Resort Type:</label>
+            <select id="resortType">
+                <option value="alpine">Alpine</option>
+                <option value="mountain">Mountain</option>
+            </select>
+            <button className="button-primary" onClick={async () => {
+                const data = {
+                    name: document.querySelector("#resortName").value,
+                    type: document.querySelector("#resortType").value,
+                    _csrf: props.csrf
+                }
+                const resort = await helper.sendPost("/createResort", data);
+                console.dir(resort);
+
+                // Join the resort you just made (however that works at the moment)...
+                game.setup();
+            }}>Open Resort!</button>
+        </div>
+    )
+}
+
+const getToken = () => {
+    return helper.sendGet("/getToken");
+}
+
+const openResortButton = async () => {
+    const csrf = await getToken().then(data => data.csrfToken);
+
+    ReactDOM.render(<OpenResort csrf={csrf} />, document.querySelector("#content"));
+}
+
 const drawSlopes = () => {
     ReactDOM.render(<Slopes />, document.querySelector('#content'));
 
@@ -92,9 +129,9 @@ const drawSlopes = () => {
 const drawMain = () => {
     ReactDOM.render(<Main />, document.querySelector("#header"));
 
-    // drawSlopes();
+    drawSlopes();
 
-    game.setup();
+    // game.setup();
 }
 
 window.onload = () => {
