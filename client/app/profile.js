@@ -110,7 +110,7 @@ const handleChangePassword = async (e) => {
     const errorMessage = form.querySelector(".errorMessage");
 
     if (oldPassword === '' || newPassword1 === '' || newPassword2 === '') {
-        errorMessage.textContent = "Username and Password are required!";
+        errorMessage.textContent = "Old Password and New Password are required!";
         return false;
     }
 
