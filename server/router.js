@@ -5,6 +5,8 @@ const game = require('./game');
 const router = (app) => {
   app.get('/getToken', mid.requiresSecure, controllers.Account.getToken);
 
+  app.post('/password', mid.requiresSecure, mid.requiresLogin, controllers.Account.changePassword);
+
   app.get('/slopes', mid.requiresSecure, game.getSlopes);
   app.post('/createResort', mid.requiresSecure, game.createSlope)
   app.get('/getSlope', mid.requiresSecure, game.getSlope);

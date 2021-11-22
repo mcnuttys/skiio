@@ -24,7 +24,7 @@ const handleLogin = (e) => {
 
     const data = { username: username, pass: password, _csrf: csrf };
     helper.sendPost("/login", data, loginError).then((data) => {
-        if (data === undefined) return;
+        if (data === undefined) return false;
 
         window.location.assign(data.redirect);
     });

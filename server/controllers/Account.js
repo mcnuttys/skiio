@@ -135,6 +135,38 @@ const getToken = (request, response) => {
   res.json(csrfJSON);
 };
 
+const changePassword = async (req, res) => {
+  const pass = req.body.pass;
+  const newPass1 = req.body.newPass1;
+  const newPass2 = req.body.newPass2;
+
+  if (!pass || !newPass1 || !newPass2) {
+    return res.status(400).json({ error: "All password fields required!" });
+  }
+
+  if (newPass1 !== newPass2) {
+    return res.status(400).json({ error: "New passwords do not match" });
+  }
+
+  return Account.AccountModel.authenticate(req.session.account.username, pass, (err, account) => {
+    if (err || !account) {
+      return res.status(400).json({ error: "Old password is incorrect" });
+    }
+
+    return Account.AccountModel.generateHash(newPass1, (salt, hash) => {
+      account.salt = salt;
+      account.password = hash;
+
+      account.save().then(() => {
+        return res.status(200).json({ message: "Password changed sucessfully" });
+      }).catch((err) => {
+        console.dir(err);
+        return res.status(500).json({ err });
+      });
+    });
+  });
+}
+
 module.exports.loginPage = loginPage;
 module.exports.logout = logout;
 module.exports.login = login;
@@ -142,3 +174,4 @@ module.exports.signup = signup;
 module.exports.getProfile = getProfile;
 module.exports.equipItem = equipItem;
 module.exports.getToken = getToken;
+module.exports.changePassword = changePassword;

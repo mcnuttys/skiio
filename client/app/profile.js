@@ -17,8 +17,8 @@ const Profile = (props) => {
                 {(!equipedTerrain) ? "" : (<img src={"/assets/img/" + equipedTerrain.type + "" + equipedTerrain.path + "/icon.png"} />)}
             </h5>
             <h5>Owned Items</h5>
-            <div className="u-full-width" id="marketItems">
-            </div>
+            <div className="u-full-width" id="marketItems"></div>
+            <button className="button" onClick={drawChangePassword}>Change Password</button>
         </div>
     );
 }
@@ -44,6 +44,29 @@ const OwnedItems = (props) => {
                 </div>
             )
         })
+    )
+}
+
+const ChangePassword = (props) => {
+    return (
+        <form
+            id="passwordForm" name="passwordForm"
+            onSubmit={handleChangePassword}
+            action="/password"
+            method="POST"
+        >
+            <label htmlFor="oldPassword">Old Password: </label>
+            <input className="u-full-width" type="password" placeholder="Enter old password..." name="oldPassword" />
+            <label htmlFor="newPassword1">New Password: </label>
+            <input className="u-full-width" type="password" placeholder="Enter new password..." name="newPassword1" />
+            <label htmlFor="newPassword2">Re-Enter New Password: </label>
+            <input className="u-full-width" type="password" placeholder="Re-Enter new password..." name="newPassword2" />
+
+            <p name="errorMessage" className="errorMessage"></p>
+
+            <input type="hidden" name="_csrf" value={props.csrf} />
+            <input className="button-primary" type="submit" value="Login" />
+        </form>
     )
 }
 
@@ -76,6 +99,38 @@ const getProfileData = async () => {
     return profileData;
 }
 
+const handleChangePassword = async (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+    const oldPassword = form.elements["oldPassword"].value;
+    const newPassword1 = form.elements["newPassword1"].value;
+    const newPassword2 = form.elements["newPassword2"].value;
+    const csrf = form.elements["_csrf"].value;
+    const errorMessage = form.querySelector(".errorMessage");
+
+    if (oldPassword === '' || newPassword1 === '' || newPassword2 === '') {
+        errorMessage.textContent = "Username and Password are required!";
+        return false;
+    }
+
+    errorMessage.textContent = "";
+
+    const passwordError = (err) => {
+        err.then(data => {
+            errorMessage.textContent = data.error;
+        })
+    }
+
+    const data = { pass: oldPassword, newPass1: newPassword1, newPass2: newPassword2, _csrf: csrf }
+    helper.sendPost("/password", data, passwordError).then((data) => {
+        if (data === undefined) return false;
+        drawProfile();
+    });
+
+    return false;
+}
+
 const ownsItem = (item) => {
     return profileData.ownedItems.find(id => id._id === item._id);
 }
@@ -90,6 +145,12 @@ const drawProfile = async () => {
 
     ReactDOM.render(<Profile profile={profileData} />, document.querySelector("#content"));
     ReactDOM.render(<OwnedItems profile={profileData} csrf={crsf} />, document.querySelector("#marketItems"));
+}
+
+const drawChangePassword = async () => {
+    const csrf = await getToken().then(data => data.csrfToken);
+
+    ReactDOM.render(<ChangePassword csrf={csrf} />, document.querySelector('#content'));
 }
 
 const getEquipedAvatar = async () => {
