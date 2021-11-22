@@ -3,6 +3,7 @@ import * as camera from "./camera.js"
 import * as input from "./inputManager.js"
 
 import { Player } from "./player.js"
+import { TerrainManager } from "./terrainManager.js"
 
 let canvas, ctx;
 
@@ -12,6 +13,7 @@ let avatarSprites = {};
 let terrainSpritesheet;
 
 let player;
+let terrainManager;
 
 const Canvas = (props) => {
     return (
@@ -46,7 +48,8 @@ const setup = async () => {
     ctx.webkitImageSmoothingEnabled = false;
     ctx.msImageSmoothingEnabled = false;
 
-    player = new Player(4.5, 5.5, avatarSprites[avatar._id]);
+    player = new Player(0, 0, avatarSprites[avatar._id]);
+    terrainManager = new TerrainManager(0, terrainSpritesheet);
 
     loop();
 }
@@ -91,6 +94,8 @@ const loop = () => {
     player.update(dt);
 
     camera.setPosition(player.x - 4.5, player.y - 5.5);
+    
+    terrainManager.draw(ctx);
     player.draw(ctx);
 }
 

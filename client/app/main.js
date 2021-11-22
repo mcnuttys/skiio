@@ -65,12 +65,15 @@ const Slopes = (props) => {
                 <tbody>
                     {props.slopes.map(slope => {
                         return (
-                            <tr>
+                            <tr key={slope.id}>
                                 <td>{slope.name}</td>
                                 <td>{slope.type}</td>
                                 <td>{slope.playerCount}</td>
-                                <td><button type="button" className="button" onClick={() => {
+                                <td><button type="button" className="button" onClick={async () => {
                                     console.dir("Join slope: " + slope.name)
+                                    let s = await helper.sendGet("/getSlope?id=" + slope.id);
+
+                                    game.setup();
                                 }}>Join Slope</button></td>
                             </tr>
                         );

@@ -19,7 +19,9 @@ const createSlope = (req, res) => {
     const resort = {
         name: req.body.name,
         type: req.body.type,
-        playerCount: 0
+        playerCount: 0,
+        id: Math.round(Math.random() * 10000).toString(),
+        seed: Math.round(Math.random() * 10000).toString()
     }
 
     slopes.push(resort);
@@ -27,5 +29,20 @@ const createSlope = (req, res) => {
     return res.status(200).json({ resort });
 }
 
+const getSlope = (req, res) => {
+    if (!req.query.id) {
+        return res.status(400).json({ error: "Must have an ID" });
+    }
+
+    let slope = slopes.find(id => id.id === req.query.id);
+
+    if (!slope) {
+        return res.status(404).json({ error: "Could not find this slope!" });
+    }
+
+    return res.status(200).json({ slope: slope });
+}
+
 module.exports.getSlopes = getSlopes;
 module.exports.createSlope = createSlope;
+module.exports.getSlope = getSlope;
