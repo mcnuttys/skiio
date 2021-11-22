@@ -136,36 +136,36 @@ const getToken = (request, response) => {
 };
 
 const changePassword = async (req, res) => {
-  const pass = req.body.pass;
-  const newPass1 = req.body.newPass1;
-  const newPass2 = req.body.newPass2;
+  const { pass } = req.body;
+  const { newPass1 } = req.body;
+  const { newPass2 } = req.body;
 
   if (!pass || !newPass1 || !newPass2) {
-    return res.status(400).json({ error: "All password fields required!" });
+    return res.status(400).json({ error: 'All password fields required!' });
   }
 
   if (newPass1 !== newPass2) {
-    return res.status(400).json({ error: "New passwords do not match" });
+    return res.status(400).json({ error: 'New passwords do not match' });
   }
 
   return Account.AccountModel.authenticate(req.session.account.username, pass, (err, account) => {
     if (err || !account) {
-      return res.status(400).json({ error: "Old password is incorrect" });
+      return res.status(400).json({ error: 'Old password is incorrect' });
     }
 
-    return Account.AccountModel.generateHash(newPass1, (salt, hash) => {
-      account.salt = salt;
-      account.password = hash;
+    const profile = account;
 
-      account.save().then(() => {
-        return res.status(200).json({ message: "Password changed sucessfully" });
-      }).catch((err) => {
-        console.dir(err);
-        return res.status(500).json({ err });
+    return Account.AccountModel.generateHash(newPass1, (salt, hash) => {
+      profile.salt = salt;
+      profile.password = hash;
+
+      profile.save().then(() => res.status(200).json({ message: 'Password changed sucessfully' })).catch((saveErr) => {
+        console.dir(saveErr);
+        return res.status(500).json({ saveErr });
       });
     });
   });
-}
+};
 
 module.exports.loginPage = loginPage;
 module.exports.logout = logout;
