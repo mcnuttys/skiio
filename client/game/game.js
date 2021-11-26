@@ -2,7 +2,7 @@ import * as profile from "../app/profile.js"
 import * as camera from "./camera.js"
 import * as input from "./inputManager.js"
 
-import { Player } from "./player.js"
+import { Player, NetworkPlayer } from "./player.js"
 import { TerrainManager } from "./terrainManager.js"
 
 let canvas, ctx;
@@ -12,8 +12,15 @@ let size = { width: 600, height: 600 };
 let avatarSprites = {};
 let terrainSpritesheet;
 
-let player;
+let localAvatar;
+let localUsername;
+let localRoom;
+
 let terrainManager;
+let player;
+let networkPlayers = [];
+
+const socket = io();
 
 const Canvas = (props) => {
     return (
@@ -21,17 +28,20 @@ const Canvas = (props) => {
     )
 }
 
-const setup = async () => {
+const setup = async (roomId) => {
     ReactDOM.render(<Canvas />, document.querySelector('#content'));
 
     input.setup();
 
-    // Load textures and stuff...
-    let avatar = await profile.getEquipedAvatar();
-    let terrainPack = await profile.getEquipedTerrain();
+    localRoom = roomId;
+    socket.emit('join room', roomId)
+}
 
-    avatarSprites[avatar._id] = new Image();
-    avatarSprites[avatar._id].src = `/assets/img/avatar${avatar.path}/sprite.png`;
+socket.on('resume setup', async (players) => {
+    // Load textures and stuff...
+    let terrainPack = await profile.getEquipedTerrain();
+    localAvatar = await profile.getEquipedAvatar();
+    localUsername = await profile.getUsername();
 
     terrainSpritesheet = new Image();
     terrainSpritesheet.src = `/assets/img/terrain${terrainPack.path}/spritesheet.png`;
@@ -48,11 +58,16 @@ const setup = async () => {
     ctx.webkitImageSmoothingEnabled = false;
     ctx.msImageSmoothingEnabled = false;
 
-    player = new Player(0, 0, avatarSprites[avatar._id]);
     terrainManager = new TerrainManager(0, terrainSpritesheet);
 
+    socket.emit('spawn player', { room: localRoom, name: localUsername, avatar: localAvatar.path });
+
+    players.forEach(player => {
+        spawnNetworkPlayer(player.name, loadAvatar(player.avatar), player.x, player.y);
+    });
+
     loop();
-}
+})
 
 let dt = 1 / 60;
 const loop = () => {
@@ -71,32 +86,83 @@ const loop = () => {
         }
     }
 
-    // ctx.drawImage(terrainSpritesheet, 16, 16, 16, 16, 0, 0, camera.tileSize, camera.tileSize);
-    // ctx.drawImage(avatarSprites["defaultavatar"], 16, 0, camera.tileSize, camera.tileSize);
+    if (player) {
+        camera.setPosition(player.x - 4.5, player.y - 5.5);
+    }
+    else if (networkPlayers.length > 0)
+        camera.setPosition(networkPlayers[0].x - 4.5, networkPlayers[0].y - 5.5);
+    else {
+        camera.setPosition(0, 0);
+    }
 
-    // console.dir(avatarSprites["defaultavatar"]);
-
-    // camera.setPosition({ x: Math.cos(dt), y: Math.sin(dt) });
-
-    // let px = 0, py = 0;
-    // if (input.isKeyDown("w"))
-    //     py += 1 * (1 / 60);
-    // if (input.isKeyDown("s"))
-    //     py += -1 * (1 / 60);
-
-    // if (input.isKeyDown("d"))
-    //     px += 1 * (1 / 60);
-    // if (input.isKeyDown("a"))
-    //     px += -1 * (1 / 60);
-
-    // camera.setPosition(camera.camX + px, camera.camY + py);
-
-    player.update(dt);
-
-    camera.setPosition(player.x - 4.5, player.y - 5.5);
-    
     terrainManager.draw(ctx);
-    player.draw(ctx);
+
+    if (player) {
+        player.update(dt, socket);
+        player.draw(ctx);
+
+        if (player.sentX != player.x || player.sentY != player.y) {
+            player.sentX = player.x;
+            player.sentY = player.y;
+
+            socket.emit(
+                'move player',
+                {
+                    room: localRoom,
+                    name: player.name,
+                    x: player.sentX,
+                    y: player.sentY,
+                    angle: player.angle,
+                }
+            );
+        }
+    }
+
+    networkPlayers.forEach(player => {
+        player.update(dt);
+        player.draw(ctx);
+    });
+}
+
+socket.on('spawn player', (netPlayer) => {
+    console.dir(netPlayer);
+
+    if (netPlayer.name === localUsername) {
+        spawnLocalPlayer(localUsername, loadAvatar(localAvatar.path));
+    } else {
+        spawnNetworkPlayer(netPlayer.name, loadAvatar(netPlayer.avatar));
+    }
+});
+
+socket.on('move player', (move) => {
+    const moved = networkPlayers.find(p => p.name === move.name);
+
+    console.dir(move);
+
+    if (!moved) return;
+
+    moved.setActual(move.x, move.y, move.angle);
+});
+
+const spawnLocalPlayer = (name, avatar) => {
+    let p = new Player(name, 0, 0, avatar);
+
+    player = p;
+}
+
+const spawnNetworkPlayer = (name, avatar, x = 0, y = 0) => {
+    let np = new NetworkPlayer(name, avatar, x, y);
+
+    networkPlayers.push(np);
+}
+
+const loadAvatar = (avatarPath) => {
+    if (!avatarSprites[avatarPath]) {
+        avatarSprites[avatarPath] = new Image();
+        avatarSprites[avatarPath].src = `/assets/img/avatar${localAvatar.path}/sprite.png`;
+    }
+
+    return avatarSprites[avatarPath];
 }
 
 export { setup }

@@ -41,6 +41,8 @@ const redisClient = redis.createClient({
   password: redisPASS,
 });
 
+const http = require('http');
+const { Server } = require('socket.io');
 const router = require('./router.js');
 
 const app = express();
@@ -80,10 +82,18 @@ app.use(express.json());
 
 router(app);
 
-app.listen(port, (err) => {
+const httpServer = http.createServer(app);
+
+const io = new Server(httpServer);
+
+httpServer.listen(port, (err) => {
   if (err) {
     throw err;
   }
 
   console.log(`Listening on port ${port}`);
 });
+
+const gameServer = require('./gameServer.js');
+
+gameServer.setup(io);

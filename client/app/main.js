@@ -70,10 +70,8 @@ const Slopes = (props) => {
                                 <td>{slope.type}</td>
                                 <td>{slope.playerCount}</td>
                                 <td><button type="button" className="button" onClick={async () => {
-                                    console.dir("Join slope: " + slope.name)
                                     let s = await helper.sendGet("/getSlope?id=" + slope.id);
-
-                                    game.setup();
+                                    game.setup(s.slope.id);
                                 }}>Join Slope</button></td>
                             </tr>
                         );
@@ -101,11 +99,11 @@ const OpenResort = (props) => {
                     type: document.querySelector("#resortType").value,
                     _csrf: props.csrf
                 }
-                const resort = await helper.sendPost("/createResort", data);
-                console.dir(resort);
 
-                // Join the resort you just made (however that works at the moment)...
-                game.setup();
+                const r = await helper.sendPost("/createResort", data);
+                console.dir(r);
+
+                game.setup(r.resort.id);
             }}>Open Resort!</button>
         </div>
     )
@@ -133,8 +131,6 @@ const drawMain = () => {
     ReactDOM.render(<Main />, document.querySelector("#header"));
 
     drawSlopes();
-
-    // game.setup();
 }
 
 window.onload = () => {

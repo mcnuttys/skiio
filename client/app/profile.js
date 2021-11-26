@@ -169,4 +169,12 @@ const getEquipedTerrain = async () => {
     return equipedTerrain;
 }
 
-export { drawProfile, getProfileData, ownsItem, getEquipedAvatar, getEquipedTerrain }
+const getUsername = async () => {
+    if (!profileData) {
+        await getProfileData();
+    }
+
+    return profileData.username;
+}
+
+export { drawProfile, getProfileData, ownsItem, getEquipedAvatar, getEquipedTerrain, getUsername }
