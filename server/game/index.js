@@ -51,6 +51,11 @@ const addPlayer = (slope, player) => {
     return;
   }
 
+  if (s.players.find((p) => p.name === player.name)) {
+    console.dir('player already exists!');
+    return;
+  }
+
   s.players.push(player);
 };
 
@@ -81,9 +86,31 @@ const getPlayers = (slope) => {
   return s.players;
 };
 
+const isSlope = (slopeId) => {
+  const s = slopes.find((room) => room.id === slopeId);
+  if (!s) {
+    return false;
+  }
+  return true;
+};
+
+const removePlayer = (player, slope) => {
+  const s = slopes.find((room) => room.id === slope);
+  if (!s) {
+    return;
+  }
+
+  const index = s.players.indexOf(s.players.find((p) => p.socketId === player));
+  if (index > -1) {
+    s.players.splice(index, 1);
+  }
+};
+
 module.exports.getSlopes = getSlopes;
 module.exports.createSlope = createSlope;
 module.exports.getSlope = getSlope;
 module.exports.addPlayer = addPlayer;
 module.exports.updatePlayer = updatePlayer;
 module.exports.getPlayers = getPlayers;
+module.exports.isSlope = isSlope;
+module.exports.removePlayer = removePlayer;

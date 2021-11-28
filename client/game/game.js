@@ -22,6 +22,8 @@ let networkPlayers = [];
 
 const socket = io();
 
+let gameRunning = true;
+
 const Canvas = (props) => {
     return (
         <canvas>Canvas needs to be supported!</canvas>
@@ -29,6 +31,7 @@ const Canvas = (props) => {
 }
 
 const setup = async (roomId) => {
+    gameRunning = true;
     ReactDOM.render(<Canvas />, document.querySelector('#content'));
 
     input.setup();
@@ -62,7 +65,9 @@ socket.on('resume setup', async (players) => {
 
     socket.emit('spawn player', { room: localRoom, name: localUsername, avatar: localAvatar.path });
 
+    networkPlayers = [];
     players.forEach(player => {
+        if (player.name === localUsername) return;
         spawnNetworkPlayer(player.name, loadAvatar(player.avatar), player.x, player.y);
     });
 
@@ -71,7 +76,11 @@ socket.on('resume setup', async (players) => {
 
 let dt = 1 / 60;
 const loop = () => {
-    requestAnimationFrame(loop);
+    if (gameRunning) {
+        requestAnimationFrame(loop);
+    } else {
+        return;
+    }
 
     ctx.clearRect(0, 0, size.width, size.height);
 
@@ -126,7 +135,6 @@ const loop = () => {
 
 socket.on('spawn player', (netPlayer) => {
     console.dir(netPlayer);
-
     if (netPlayer.name === localUsername) {
         spawnLocalPlayer(localUsername, loadAvatar(localAvatar.path));
     } else {
@@ -134,10 +142,13 @@ socket.on('spawn player', (netPlayer) => {
     }
 });
 
+socket.on('remove player', (socketId) => {
+    const i = networkPlayers.indexOf(networkPlayers.find(id => id.socketId === socketId));
+    networkPlayers.splice(i, 1);
+});
+
 socket.on('move player', (move) => {
     const moved = networkPlayers.find(p => p.name === move.name);
-
-    console.dir(move);
 
     if (!moved) return;
 
@@ -159,10 +170,17 @@ const spawnNetworkPlayer = (name, avatar, x = 0, y = 0) => {
 const loadAvatar = (avatarPath) => {
     if (!avatarSprites[avatarPath]) {
         avatarSprites[avatarPath] = new Image();
-        avatarSprites[avatarPath].src = `/assets/img/avatar${localAvatar.path}/sprite.png`;
+        avatarSprites[avatarPath].src = `/assets/img/avatar${avatarPath}/sprite.png`;
     }
 
     return avatarSprites[avatarPath];
 }
 
-export { setup }
+const closeGame = () => {
+    networkPlayers = [];
+    gameRunning = false;
+
+    socket.emit('closed game');
+}
+
+export { setup, closeGame }

@@ -1,11 +1,30 @@
 const game = require('./game');
 
+const exitGame = (io, socket) => {
+  socket.rooms.forEach((room) => {
+    if (game.isSlope(room)) {
+      game.removePlayer(socket.id, room);
+      io.to(room).emit('remove player', socket.id);
+    }
+  });
+};
+
 const setup = (io) => {
   io.on('connection', (socket) => {
-    console.log('user connected');
+    socket.on('disconnecting', () => {
+      socket.rooms.forEach((room) => {
+        if (game.isSlope(room)) {
+          game.removePlayer(socket.id, room);
+          io.to(room).emit('remove player', socket.id);
+        }
+      });
+    });
 
     socket.on('disconnect', () => {
-      console.log('user disconnected');
+    });
+
+    socket.on('closed game', () => {
+      exitGame(io, socket);
     });
 
     socket.on('join room', (roomId) => {
@@ -15,7 +34,12 @@ const setup = (io) => {
 
     socket.on('spawn player', (player) => {
       game.addPlayer(player.room, {
-        name: player.name, avatar: player.avatar, x: 0, y: 0, angle: 0,
+        name: player.name,
+        avatar: player.avatar,
+        x: 0,
+        y: 0,
+        angle: 0,
+        socketId: socket.id,
       });
       io.to(player.room).emit('spawn player', player);
     });

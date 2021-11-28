@@ -8,10 +8,10 @@ const Main = (props) => {
     return (
         <div className="container">
             <div className="row" id="headerBar">
-                <button type="button" className="button" id="marketButton" onClick={() => { console.dir("clicked market"); market.drawMarket(); }} >Market</button>
-                <button type="button" className="button" id="leaderboardButton" onClick={() => { console.dir("clicked leaderboard"); leaderboard.drawLeaderboard(); }} >Leaderboards</button>
-                <button type="button" className="button" id="gameButton" onClick={() => { console.dir("clicked game"); drawMain(); }} >Game</button>
-                <button type="button" className="button" id="profileButton" onClick={() => { console.dir("clicked profile"); profile.drawProfile(); }} >Profile</button>
+                <button type="button" className="button" id="marketButton" onClick={() => { console.dir("clicked market"); market.drawMarket(); game.closeGame(); }} >Market</button>
+                <button type="button" className="button" id="leaderboardButton" onClick={() => { console.dir("clicked leaderboard"); leaderboard.drawLeaderboard(); game.closeGame(); }} >Leaderboards</button>
+                <button type="button" className="button" id="gameButton" onClick={() => { console.dir("clicked game"); drawMain(); game.closeGame(); }} >Game</button>
+                <button type="button" className="button" id="profileButton" onClick={() => { console.dir("clicked profile"); profile.drawProfile(); game.closeGame(); }} >Profile</button>
             </div>
         </div>
     )
