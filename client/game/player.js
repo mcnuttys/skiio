@@ -17,33 +17,44 @@ class Player {
     }
 
     update(dt) {
-        if (input.isKeyDown('w')) {
-            this.vy += this.movementSpeed;
-        }
+
+        const facing = { x: Math.cos(this.angle + Math.PI / 2), y: Math.sin(this.angle + Math.PI / 2) };
+        const downProj = utils.project(0, 10, facing.x, facing.y);
+
         if (input.isKeyDown('a')) {
-            this.vx += -this.movementSpeed;
+            this.angle += 2 * dt;
         }
-        if (input.isKeyDown('s')) {
-            this.vy += -this.movementSpeed;
-        }
+
         if (input.isKeyDown('d')) {
-            this.vx += this.movementSpeed;
+            this.angle -= 2 * dt;
         }
 
-        if (this.vx != 0) {
-            this.vx -= this.vx * 0.3;
+        if (input.isKeyDown('s')) {
+            this.addForce({ x: -this.vx * 0.5, y: -this.vy * 0.5 });
         }
 
-        if (this.vy != 0) {
-            this.vy -= this.vy * 0.3;
-        }
 
-        if (this.vx != 0 || this.vy != 0) {
-            this.angle = Math.atan2(this.vx, this.vy);
+        this.addForce({ x: downProj.x, y: downProj.y });
+        this.addForce({ x: -this.vx * 0.075, y: -this.vy * 0.075 });
+
+        let v = utils.magnitude(this.vx, this.vy);
+        this.vx = facing.x * v;
+        this.vy = facing.y * v;
+
+        if(input.isKeyDown('w')) {
+            if(v < 5) {
+                this.vx += facing.x * 0.5;
+                this.vy += facing.y * 0.5;
+            }
         }
 
         this.x += this.vx * dt;
         this.y += this.vy * dt;
+    }
+
+    addForce(f) {
+        this.vx += f.x;
+        this.vy += f.y;
     }
 
     draw(ctx) {
@@ -51,7 +62,7 @@ class Player {
 
         ctx.save();
         ctx.translate(cPos.x + camera.tileSize / 2, cPos.y + camera.tileSize / 2)
-        ctx.rotate(this.angle);
+        ctx.rotate(-this.angle);
         ctx.translate(-(cPos.x + camera.tileSize / 2), -(cPos.y + camera.tileSize / 2))
         ctx.drawImage(this.avatar, cPos.x, cPos.y, camera.tileSize, camera.tileSize);
         ctx.restore();

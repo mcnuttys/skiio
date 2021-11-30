@@ -35,9 +35,10 @@ const setup = async (roomId) => {
     ReactDOM.render(<Canvas />, document.querySelector('#content'));
 
     input.setup();
+    noise.seed(Math.random());
 
     localRoom = roomId;
-    socket.emit('join room', roomId)
+    socket.emit('join room', roomId);
 }
 
 socket.on('resume setup', async (players) => {
@@ -96,14 +97,15 @@ const loop = () => {
     }
 
     if (player) {
-        camera.setPosition(player.x - 4.5, player.y - 5.5);
+        camera.follow(dt, 15, player.x - 4.5, player.y - 5.5);
     }
     else if (networkPlayers.length > 0)
-        camera.setPosition(networkPlayers[0].x - 4.5, networkPlayers[0].y - 5.5);
+        camera.follow(dt, 15, networkPlayers[0].x - 4.5, networkPlayers[0].y - 5.5);
     else {
         camera.setPosition(0, 0);
     }
 
+    terrainManager.update(dt);
     terrainManager.draw(ctx);
 
     if (player) {

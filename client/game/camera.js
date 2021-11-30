@@ -27,4 +27,9 @@ const setPosition = (x, y) => {
     camY = y;
 }
 
-export { setup, toScreenSpace, setPosition, tileSize, camX, camY };
+const follow = (dt, followSpeed, posX, posY) => {
+    camX += (posX - camX) * dt * followSpeed;
+    camY += (posY - camY) * dt * followSpeed;
+}
+
+export { setup, toScreenSpace, setPosition, follow, tileSize, camX, camY };
