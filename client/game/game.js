@@ -30,12 +30,12 @@ const Canvas = (props) => {
     )
 }
 
-const setup = async (roomId) => {
+const setup = async (roomId, seed) => {
     gameRunning = true;
     ReactDOM.render(<Canvas />, document.querySelector('#content'));
 
     input.setup();
-    noise.seed(Math.random());
+    noise.seed(seed);
 
     localRoom = roomId;
     socket.emit('join room', roomId);
@@ -97,15 +97,13 @@ const loop = () => {
     }
 
     if (player) {
-        camera.follow(dt, 15, player.x - 4.5, player.y - 5.5);
+        camera.follow(dt, 15, player.x + (player.vx / 5) - 4.5, player.y + (player.vy / 5) - 5.5);
     }
-    else if (networkPlayers.length > 0)
+    else if (networkPlayers.length > 0) {
         camera.follow(dt, 15, networkPlayers[0].x - 4.5, networkPlayers[0].y - 5.5);
-    else {
-        camera.setPosition(0, 0);
     }
 
-    terrainManager.update(dt);
+    terrainManager.update(dt, player);
     terrainManager.draw(ctx);
 
     if (player) {
@@ -163,6 +161,11 @@ const spawnLocalPlayer = (name, avatar) => {
     player = p;
 }
 
+const killLocalPlayer = () => {
+    socket.emit('kill player', localRoom);
+    player = undefined;
+}
+
 const spawnNetworkPlayer = (name, avatar, x = 0, y = 0) => {
     let np = new NetworkPlayer(name, avatar, x, y);
 
@@ -185,4 +188,4 @@ const closeGame = () => {
     socket.emit('closed game');
 }
 
-export { setup, closeGame }
+export { setup, closeGame, killLocalPlayer }

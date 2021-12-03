@@ -43,8 +43,8 @@ class Player {
 
         if(input.isKeyDown('w')) {
             if(v < 5) {
-                this.vx += facing.x * 0.5;
-                this.vy += facing.y * 0.5;
+                this.vx += facing.x * 1;
+                this.vy += facing.y * 1;
             }
         }
 

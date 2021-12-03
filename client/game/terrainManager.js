@@ -1,5 +1,6 @@
 import * as utils from "../helper/utils.js"
 import * as camera from "./camera.js"
+import * as game from "./game.js"
 
 const CHUNK_SIZE = 16;
 
@@ -11,7 +12,7 @@ class TerrainManager {
         this.chunks = [];
     }
 
-    update(dt) {
+    update(dt, player) {
         let currentChunk = this.asChunk(camera.camX, camera.camY);
 
         if (currentChunk.x != this.lastChunkPos.x || currentChunk.y != this.lastChunkPos.y) {
@@ -21,11 +22,9 @@ class TerrainManager {
                     let chunkX = currentChunk.x + x;
                     let chunkY = currentChunk.y + y;
 
-                    if (!this.chunks.find(c => c.x === chunkX && c.y === chunkY)) {
+                    if (!this.chunks.find(c => c.x == chunkX && c.y == chunkY)) {
                         this.chunks.push(new Chunk(chunkX, chunkY, 0, this.spritesheet))
                     }
-
-                    console.dir(`Generating chunk at (${chunkX}, ${chunkY})`);
                 }
             }
 
@@ -41,6 +40,22 @@ class TerrainManager {
             }
 
             this.chunks.sort((a, b) => b.y - a.y);
+        }
+
+        if (!player) return;
+
+        let playerChunkPos = this.asChunk(player.x, player.y);
+        let playerChunk = this.chunks.find(c => c.x == playerChunkPos.x * 16 && c.y == playerChunkPos.y * 16);
+
+        if (playerChunk) {
+            playerChunk.tiles.forEach(tile => {
+                if (tile.perlin < 0.65) return;
+
+                if (utils.distance(tile.x, tile.y, player.x, player.y) < 2) {
+                    // Kill the player
+                    game.killLocalPlayer();
+                }
+            });
         }
     }
 
