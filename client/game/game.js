@@ -79,7 +79,13 @@ socket.on('resume setup', async (players) => {
 })
 
 let dt = 1 / 60;
-const loop = () => {
+let prevTime = 0;
+const loop = (timestamp) => {
+    if (prevTime != timestamp)
+        dt = (timestamp - prevTime) / 1000;
+
+    console.dir(dt);
+
     if (gameRunning) {
         requestAnimationFrame(loop);
     } else {
@@ -142,7 +148,7 @@ const loop = () => {
     } else {
         // Respawn stuff or spectating info
         ctx.textAlign = "center";
-        
+
         ctx.strokeText("Score: " + score, size.width / 2, (size.height / 2) - 50);
         ctx.strokeText("High Score: " + highScore, size.width / 2, (size.height / 2) - 25);
         ctx.strokeText("Press Space to Respawn...", size.width / 2, size.height / 2);
@@ -157,6 +163,8 @@ const loop = () => {
         }
     }
     ctx.restore();
+
+    prevTime = timestamp;
 }
 
 socket.on('spawn player', (netPlayer) => {
