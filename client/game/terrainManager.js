@@ -42,9 +42,9 @@ class TerrainManager {
             this.chunks.sort((a, b) => b.y - a.y);
         }
 
-        if (!player) return;
+        if (!player || player.dead) return;
 
-        let playerChunkPos = this.asChunk(player.x, player.y);
+        let playerChunkPos = this.asChunk(player.x + 0.5, player.y - 0.5);
         let playerChunk = this.chunks.find(c => c.x == playerChunkPos.x * 16 && c.y == playerChunkPos.y * 16);
 
         if (playerChunk) {

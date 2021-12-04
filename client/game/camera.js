@@ -11,6 +11,9 @@ const setup = (cSize, wScale) => {
     worldScale = wScale;
     cameraScale = cSize.width;
     tileSize = cameraScale / wScale;
+
+    camX = 0;
+    camY = 0;
 }
 
 const toScreenSpace = (posX, posY) => {

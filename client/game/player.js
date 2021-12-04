@@ -17,6 +17,9 @@ class Player {
     }
 
     update(dt) {
+        if (this.dead) {
+            return;
+        }
 
         const facing = { x: Math.cos(this.angle + Math.PI / 2), y: Math.sin(this.angle + Math.PI / 2) };
         const downProj = utils.project(0, 10, facing.x, facing.y);

@@ -27,15 +27,21 @@ let gameRunning = true;
 let highScore = 0;
 let score = 0;
 
+let gameLoop;
+
 const Canvas = (props) => {
     return (
         <canvas>Canvas needs to be supported!</canvas>
     )
 }
 
-const setup = async (roomId, seed) => {
+const setup = (roomId, seed) => {
     gameRunning = true;
     ReactDOM.render(<Canvas />, document.querySelector('#content'));
+
+    player = undefined;
+    terrainManager = undefined;
+    cancelAnimationFrame(gameLoop);
 
     input.setup();
     noise.seed(seed);
@@ -67,7 +73,7 @@ socket.on('resume setup', async (players) => {
 
     terrainManager = new TerrainManager(0, terrainSpritesheet);
 
-    socket.emit('spawn player', { room: localRoom, name: localUsername, avatar: localAvatar.path });
+    // socket.emit('spawn player', { room: localRoom, name: localUsername, avatar: localAvatar.path });
 
     networkPlayers = [];
     players.forEach(player => {
@@ -81,19 +87,24 @@ socket.on('resume setup', async (players) => {
 let dt = 1 / 60;
 let prevTime = 0;
 const loop = (timestamp) => {
-    if (prevTime != timestamp)
-        dt = (timestamp - prevTime) / 1000;
-
     if (gameRunning) {
-        requestAnimationFrame(loop);
+        gameLoop = window.requestAnimationFrame(loop);
     } else {
         return;
     }
 
+    if (prevTime !== timestamp) {
+        dt = (timestamp - prevTime) / 1000;
+        prevTime = timestamp;
+    }
+
+    if (dt === NaN || dt > 1)
+        return;
+
     ctx.clearRect(0, 0, size.width, size.height);
 
-    if (player) {
-        camera.follow(dt, 15, player.x + (player.vx / 5) - 4.5, player.y + (player.vy / 5) - 5.5);
+    if (player && !player.dead) {
+        camera.follow(dt, 15, player.x + (player.vx / 2.5) - 4.5, player.y + (player.vy / 2.5) - 5.5);
     }
     else if (networkPlayers.length > 0) {
         camera.follow(dt, 5, networkPlayers[0].x - 4.5, networkPlayers[0].y - 5.5);
@@ -131,9 +142,9 @@ const loop = (timestamp) => {
     ctx.save();
     ctx.fillStyle = "black";
     ctx.strokeStyle = "white";
-    ctx.font = "25px Arial"
-
-    if (player) {
+    ctx.font = "25px Arial";
+    
+    if (player && !player.dead) {
         // Draw Score Text
         if (Math.round(player.y) > score) {
             score = Math.round(player.y);
@@ -160,9 +171,8 @@ const loop = (timestamp) => {
             socket.emit('spawn player', { room: localRoom, name: localUsername, avatar: localAvatar.path });
         }
     }
-    ctx.restore();
 
-    prevTime = timestamp;
+    ctx.restore();
 }
 
 socket.on('spawn player', (netPlayer) => {
@@ -197,7 +207,7 @@ const killLocalPlayer = () => {
         highScore = score;
 
     socket.emit('kill player', { room: localRoom });
-    player = undefined;
+    player.dead = true;
 }
 
 const spawnNetworkPlayer = (name, avatar, x = 0, y = 0) => {
