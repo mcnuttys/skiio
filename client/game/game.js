@@ -84,8 +84,6 @@ const loop = (timestamp) => {
     if (prevTime != timestamp)
         dt = (timestamp - prevTime) / 1000;
 
-    console.dir(dt);
-
     if (gameRunning) {
         requestAnimationFrame(loop);
     } else {
