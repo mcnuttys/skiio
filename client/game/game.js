@@ -24,6 +24,9 @@ const socket = io();
 
 let gameRunning = true;
 
+let highScore = 0;
+let score = 0;
+
 const Canvas = (props) => {
     return (
         <canvas>Canvas needs to be supported!</canvas>
@@ -85,22 +88,11 @@ const loop = () => {
 
     ctx.clearRect(0, 0, size.width, size.height);
 
-    for (let i = 0; i < 10; i++) {
-        for (let j = 0; j < 10; j++) {
-            ctx.save();
-            ctx.translate(0, -camera.tileSize);
-            ctx.fillStyle = `rgb(${(i / 10) * 255}, ${(j / 10) * 255}, ${(((i / 10) + (j / 10)) / 2) * 255})`;
-            const pos = camera.toScreenSpace(i, j);
-            ctx.fillRect(pos.x, pos.y, camera.tileSize, camera.tileSize);
-            ctx.restore();
-        }
-    }
-
     if (player) {
         camera.follow(dt, 15, player.x + (player.vx / 5) - 4.5, player.y + (player.vy / 5) - 5.5);
     }
     else if (networkPlayers.length > 0) {
-        camera.follow(dt, 15, networkPlayers[0].x - 4.5, networkPlayers[0].y - 5.5);
+        camera.follow(dt, 5, networkPlayers[0].x - 4.5, networkPlayers[0].y - 5.5);
     }
 
     terrainManager.update(dt, player);
@@ -121,20 +113,53 @@ const loop = () => {
                     name: player.name,
                     x: player.sentX,
                     y: player.sentY,
-                    angle: player.angle,
+                    angle: -player.angle,
                 }
             );
         }
     }
 
-    networkPlayers.forEach(player => {
-        player.update(dt);
-        player.draw(ctx);
+    networkPlayers.forEach(netP => {
+        netP.update(dt);
+        netP.draw(ctx);
     });
+
+    ctx.save();
+    ctx.fillStyle = "black";
+    ctx.strokeStyle = "white";
+    ctx.font = "25px Arial"
+
+    if (player) {
+        // Draw Score Text
+        if (Math.round(player.y) > score) {
+            score = Math.round(player.y);
+        }
+
+        ctx.textAlign = "end";
+        ctx.strokeText("Score: " + score, size.width, 25);
+        ctx.fillText("Score: " + score, size.width, 25);
+
+    } else {
+        // Respawn stuff or spectating info
+        ctx.textAlign = "center";
+        
+        ctx.strokeText("Score: " + score, size.width / 2, (size.height / 2) - 50);
+        ctx.strokeText("High Score: " + highScore, size.width / 2, (size.height / 2) - 25);
+        ctx.strokeText("Press Space to Respawn...", size.width / 2, size.height / 2);
+
+        ctx.fillText("Score: " + score, size.width / 2, (size.height / 2) - 50);
+        ctx.fillText("High Score: " + highScore, size.width / 2, (size.height / 2) - 25);
+        ctx.fillText("Press Space to Respawn...", size.width / 2, size.height / 2);
+
+        if (input.isKeyDown(' ')) {
+            // Respawn the player
+            socket.emit('spawn player', { room: localRoom, name: localUsername, avatar: localAvatar.path });
+        }
+    }
+    ctx.restore();
 }
 
 socket.on('spawn player', (netPlayer) => {
-    console.dir(netPlayer);
     if (netPlayer.name === localUsername) {
         spawnLocalPlayer(localUsername, loadAvatar(localAvatar.path));
     } else {
@@ -157,12 +182,15 @@ socket.on('move player', (move) => {
 
 const spawnLocalPlayer = (name, avatar) => {
     let p = new Player(name, 0, 0, avatar);
-
+    score = 0;
     player = p;
 }
 
 const killLocalPlayer = () => {
-    socket.emit('kill player', localRoom);
+    if (score > highScore)
+        highScore = score;
+
+    socket.emit('kill player', { room: localRoom });
     player = undefined;
 }
 

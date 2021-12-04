@@ -22,7 +22,7 @@ class TerrainManager {
                     let chunkX = currentChunk.x + x;
                     let chunkY = currentChunk.y + y;
 
-                    if (!this.chunks.find(c => c.x == chunkX && c.y == chunkY)) {
+                    if (!this.chunks.find(c => c.x == chunkX * 16 && c.y == chunkY * 16)) {
                         this.chunks.push(new Chunk(chunkX, chunkY, 0, this.spritesheet))
                     }
                 }
@@ -51,7 +51,7 @@ class TerrainManager {
             playerChunk.tiles.forEach(tile => {
                 if (tile.perlin < 0.65) return;
 
-                if (utils.distance(tile.x, tile.y, player.x, player.y) < 2) {
+                if (utils.distance(tile.x + 0.5, tile.y - 1.5, player.x + 0.5, player.y - 0.5) < 1) {
                     // Kill the player
                     game.killLocalPlayer();
                 }
@@ -111,6 +111,9 @@ class Chunk {
                 let perlin = noise.perlin2(tx / 10, ty / 10) + 0.5;
                 // console.dir(`${perlin}, ${tx}, ${ty}`)
 
+                if (utils.distance(tx, ty, 0, 0) < 10)
+                    perlin = 0;
+
                 this.tiles[index] = new Tile(tx, ty, tz, this.spritesheet, facing, perlin);
             }
         }
@@ -125,8 +128,11 @@ class Chunk {
     }
 
     altitude(x, y) {
-        return (utils.distance(x, y, 0, 0) / 5);
-        // return noise.perlin2(x / 2, y / 2) * 2;
+        let d = utils.distance(x, y, 0, 0);
+        if (d < 10)
+            return 0;
+
+        return (d - 5) / 5;
     }
 }
 
@@ -146,6 +152,7 @@ class Tile {
 
     draw(ctx) {
         const cPos = camera.toScreenSpace(this.x, this.y);
+        const colPos = camera.toScreenSpace(this.x + 0.5, this.y - 1.5);
 
         if (utils.distance(this.x, this.y, camera.camX, camera.camY) > 15) return;
 
@@ -167,6 +174,12 @@ class Tile {
         if (this.perlin > 0.65) {
             // Tree
             ctx.drawImage(this.img, 48, 0, 16, 32, cPos.x, cPos.y, camera.tileSize, camera.tileSize * 2);
+
+            // ctx.fillStyle = "red";
+            // ctx.beginPath();
+            // ctx.arc(colPos.x, colPos.y, camera.tileSize / 2, 0, Math.PI * 2);
+            // ctx.closePath();
+            // ctx.fill();
         }
 
         // ctx.fillStyle = "black";

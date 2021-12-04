@@ -47,7 +47,7 @@ const setup = (io) => {
     socket.on('kill player', (player) => {
       game.removePlayer(socket.id, player.room);
       io.to(player.room).emit('remove player', socket.id);
-    })
+    });
 
     socket.on('move player', (move) => {
       game.updatePlayer(move.room, move);

@@ -30,9 +30,8 @@ class Player {
         }
 
         if (input.isKeyDown('s')) {
-            this.addForce({ x: -this.vx * 0.5, y: -this.vy * 0.5 });
+            this.addForce({ x: -this.vx * 0.25, y: -this.vy * 0.25 });
         }
-
 
         this.addForce({ x: downProj.x, y: downProj.y });
         this.addForce({ x: -this.vx * 0.075, y: -this.vy * 0.075 });
@@ -41,15 +40,17 @@ class Player {
         this.vx = facing.x * v;
         this.vy = facing.y * v;
 
-        if(input.isKeyDown('w')) {
-            if(v < 5) {
-                this.vx += facing.x * 1;
-                this.vy += facing.y * 1;
+        if (input.isKeyDown('w')) {
+            if (v < 5) {
+                this.vx += facing.x * 1.5;
+                this.vy += facing.y * 1.5;
             }
         }
 
-        this.x += this.vx * dt;
-        this.y += this.vy * dt;
+        if (utils.magnitude(this.vx, this.vy) > 0.1) {
+            this.x += this.vx * dt;
+            this.y += this.vy * dt;
+        }
     }
 
     addForce(f) {
@@ -59,8 +60,16 @@ class Player {
 
     draw(ctx) {
         const cPos = camera.toScreenSpace(this.x, this.y);
+        const colPos = camera.toScreenSpace(this.x + 0.5, this.y - 0.5);
 
         ctx.save();
+
+        // ctx.fillStyle = "red";
+        // ctx.beginPath();
+        // ctx.arc(colPos.x, colPos.y, camera.tileSize / 2, 0, Math.PI * 2);
+        // ctx.closePath();
+        // ctx.fill();
+
         ctx.translate(cPos.x + camera.tileSize / 2, cPos.y + camera.tileSize / 2)
         ctx.rotate(-this.angle);
         ctx.translate(-(cPos.x + camera.tileSize / 2), -(cPos.y + camera.tileSize / 2))
@@ -102,6 +111,11 @@ class NetworkPlayer {
         const cPos = camera.toScreenSpace(this.x, this.y);
 
         ctx.save();
+        ctx.fillStyle = "black"
+        ctx.font = "20px Arial"
+        ctx.textAlign = "center";
+        ctx.fillText(this.name, cPos.x + camera.tileSize / 2, cPos.y + camera.tileSize + 15);
+
         ctx.translate(cPos.x + camera.tileSize / 2, cPos.y + camera.tileSize / 2)
         ctx.rotate(this.angle);
         ctx.translate(-(cPos.x + camera.tileSize / 2), -(cPos.y + camera.tileSize / 2))
