@@ -94,6 +94,6 @@ httpServer.listen(port, (err) => {
   console.log(`Listening on port ${port}`);
 });
 
+// Add socket IO stuff pretty much just coverted the server type from before into an httpServer
 const gameServer = require('./gameServer.js');
-
 gameServer.setup(io);

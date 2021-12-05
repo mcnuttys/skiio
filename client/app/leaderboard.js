@@ -1,5 +1,7 @@
 import * as helper from "../helper/helper.js";
 
+// React Component for the leaderboard
+// Handles if there are no entries and if there are
 const Leaderboard = (props) => {
     if (!props.leaderboard) {
         return (
@@ -52,6 +54,7 @@ const Leaderboard = (props) => {
     )
 }
 
+// Udates the leaderboard with a different filter, (REMOVED)
 const updateLeaderboard = (e) => {
     const action = `/leaderboard${(e.target.value != 'unset') ? "?filter=" + e.target.value : ''}`;
     helper.sendGet(action).then(data => {
@@ -59,6 +62,7 @@ const updateLeaderboard = (e) => {
     });
 }
 
+// Draw the leaderboard into the content div
 const drawLeaderboard = () => {
     ReactDOM.render(<Leaderboard />, document.querySelector("#content"));
 

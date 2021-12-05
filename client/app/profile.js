@@ -4,6 +4,7 @@ let profileData;
 let equipedAvatar;
 let equipedTerrain;
 
+// React component for the profile information
 const Profile = (props) => {
     return (
         <div className="container">
@@ -23,6 +24,7 @@ const Profile = (props) => {
     );
 }
 
+// React component for owned items
 const OwnedItems = (props) => {
     if (!props.profile.ownedItems || props.profile.ownedItems <= 0) {
         return (
@@ -47,6 +49,7 @@ const OwnedItems = (props) => {
     )
 }
 
+// React component for changing password
 const ChangePassword = (props) => {
     return (
         <form
@@ -70,6 +73,7 @@ const ChangePassword = (props) => {
     )
 }
 
+// Display the equip button, gray it out and disable it if its already equiped
 const equipItemButton = (props, item) => {
     if (item._id === profileData.equipedAvatar || item._id === profileData.equipedTerrain) {
         return (
@@ -85,7 +89,7 @@ const equipItemButton = (props, item) => {
     )
 }
 
-
+// Get the users profile data from the server
 const getProfileData = async () => {
     const data = await helper.sendGet("/getProfile");
     profileData = data.profile;
@@ -109,6 +113,8 @@ const getProfileData = async () => {
     return profileData;
 }
 
+// handle password change form,
+// First confirm everything is there, then everything is right, and finally send it off to the server
 const handleChangePassword = async (e) => {
     e.preventDefault();
 

@@ -4,19 +4,21 @@ import * as market from "./market.js";
 import * as profile from "./profile.js";
 import * as game from "../game/game.js";
 
+// Just the primary header bar with all the different buttons
 const Main = (props) => {
     return (
         <div className="container">
             <div className="row" id="headerBar">
-                <button type="button" className="button" id="marketButton" onClick={() => { console.dir("clicked market"); market.drawMarket(); game.closeGame(); }} >Market</button>
-                <button type="button" className="button" id="leaderboardButton" onClick={() => { console.dir("clicked leaderboard"); leaderboard.drawLeaderboard(); game.closeGame(); }} >Leaderboards</button>
-                <button type="button" className="button" id="gameButton" onClick={() => { console.dir("clicked game"); drawMain(); game.closeGame(); }} >Game</button>
-                <button type="button" className="button" id="profileButton" onClick={() => { console.dir("clicked profile"); profile.drawProfile(); game.closeGame(); }} >Profile</button>
+                <button type="button" className="button" id="marketButton" onClick={() => { market.drawMarket(); game.closeGame(); }} >Market</button>
+                <button type="button" className="button" id="leaderboardButton" onClick={() => { leaderboard.drawLeaderboard(); game.closeGame(); }} >Leaderboards</button>
+                <button type="button" className="button" id="gameButton" onClick={() => { drawMain(); game.closeGame(); }} >Game</button>
+                <button type="button" className="button" id="profileButton" onClick={() => { profile.drawProfile(); game.closeGame(); }} >Profile</button>
             </div>
         </div>
     )
 }
 
+// The game screen before in game, lists out all available slopes
 const Slopes = (props) => {
     if (!props.slopes || props.slopes.length <= 0) {
         return (
@@ -83,6 +85,8 @@ const Slopes = (props) => {
     );
 }
 
+// The settings for creating a slope
+// The plan was to have some more but yeah
 const OpenResort = (props) => {
     return (
         <div>
@@ -108,23 +112,26 @@ const OpenResort = (props) => {
                 const r = await helper.sendPost("/createResort", data, resortError);
 
                 if (r.err) return;
-                
+
                 game.setup(r.resort.id, r.resort.seed, props.csrf);
             }}>Open Resort!</button>
         </div>
     )
 }
 
+// Gets the token from the server
 const getToken = () => {
     return helper.sendGet("/getToken");
 }
 
+// Displays the create room menu
 const openResortButton = async () => {
     const csrf = await getToken().then(data => data.csrfToken);
 
     ReactDOM.render(<OpenResort csrf={csrf} />, document.querySelector("#content"));
 }
 
+// Displays all the slopes
 const drawSlopes = () => {
     ReactDOM.render(<Slopes />, document.querySelector('#content'));
 
@@ -134,6 +141,7 @@ const drawSlopes = () => {
     });
 }
 
+// Draws the header bar
 const drawMain = () => {
     ReactDOM.render(<Main />, document.querySelector("#header"));
 

@@ -2,6 +2,7 @@ import * as camera from "./camera.js"
 import * as input from "./inputManager.js"
 import * as utils from "../helper/utils.js"
 
+// Local-Player class
 class Player {
     constructor(name, x, y, avatar) {
         this.name = name;
@@ -16,6 +17,7 @@ class Player {
         this.angle = 0;
     }
 
+    // Handle the wacky physics movement
     update(dt) {
         if (this.dead) {
             return;
@@ -67,6 +69,7 @@ class Player {
 
         ctx.save();
 
+        // Draw the players collider
         // ctx.fillStyle = "red";
         // ctx.beginPath();
         // ctx.arc(colPos.x, colPos.y, camera.tileSize / 2, 0, Math.PI * 2);

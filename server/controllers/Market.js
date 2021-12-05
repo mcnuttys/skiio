@@ -3,6 +3,7 @@ const models = require('../models');
 const { Market } = models;
 const { Account } = models;
 
+// Get all the market items depending on a given filter
 const getMarket = (req, res) => {
   if (!req.query.filter) {
     Market.MarketModel.find().lean()
@@ -14,6 +15,7 @@ const getMarket = (req, res) => {
   }
 };
 
+// Add an item to the market given a name, type, and file path
 const addMarketItem = (req, res) => {
   if (!req.body.name || !req.body.type || !req.body.path) {
     return res.status(400).json({ error: 'The name, type, and path are all required!' });
@@ -37,6 +39,8 @@ const addMarketItem = (req, res) => {
   return newEntry;
 };
 
+// Purchase an item from the market and save it to an account.
+// Given an item id add a given item to an array on the accounts model
 const purchaseMarketItem = async (req, res) => {
   if (!req.body.id) {
     return res.status(400).json({ error: 'The ID of the item purchased is required!' });

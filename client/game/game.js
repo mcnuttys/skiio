@@ -31,12 +31,14 @@ let score = 0;
 let gameLoop;
 let csrf;
 
+// React component for the canvas
 const Canvas = (props) => {
     return (
         <canvas>Canvas needs to be supported!</canvas>
     )
 }
 
+// Setup the default values for the game, then ask socket for the room info
 const setup = (roomId, seed, _csrf) => {
     gameRunning = true;
     ReactDOM.render(<Canvas />, document.querySelector('#content'));
@@ -53,6 +55,7 @@ const setup = (roomId, seed, _csrf) => {
     socket.emit('join room', roomId);
 }
 
+// Has gotten the room info from socket so finish the setup process.
 socket.on('resume setup', async (players) => {
     // Load textures and stuff...
     let terrainPack = await profile.getEquipedTerrain();
@@ -76,8 +79,6 @@ socket.on('resume setup', async (players) => {
 
     terrainManager = new TerrainManager(0, terrainSpritesheet);
 
-    // socket.emit('spawn player', { room: localRoom, name: localUsername, avatar: localAvatar.path });
-
     networkPlayers = [];
     players.forEach(player => {
         if (player.name === localUsername) return;
@@ -88,6 +89,8 @@ socket.on('resume setup', async (players) => {
 })
 
 let dt = 1 / 60;
+
+// The primary game loop started by setInterval, handles all the update and draw logic
 const loop = () => {
     ctx.clearRect(0, 0, size.width, size.height);
 
@@ -153,7 +156,7 @@ const loop = () => {
 
         ctx.fillText("Score: " + score, size.width / 2, (size.height / 2) - 50);
         ctx.fillText("High Score: " + highScore, size.width / 2, (size.height / 2) - 25);
-        ctx.fillText("Press Space to Respawn...", size.width / 2, size.height / 2);
+        ctx.fillText("Press Space to Ski...", size.width / 2, size.height / 2);
 
         if (input.isKeyDown(' ')) {
             // Respawn the player
@@ -164,6 +167,7 @@ const loop = () => {
     ctx.restore();
 }
 
+// Recieved a spawned player from socketIO
 socket.on('spawn player', (netPlayer) => {
     if (netPlayer.name === localUsername) {
         spawnLocalPlayer(localUsername, loadAvatar(localAvatar.path));
@@ -172,11 +176,13 @@ socket.on('spawn player', (netPlayer) => {
     }
 });
 
+// Remove a player from the network players
 socket.on('remove player', (socketId) => {
     const i = networkPlayers.indexOf(networkPlayers.find(id => id.socketId === socketId));
     networkPlayers.splice(i, 1);
 });
 
+// Recieved a player movement from the socket, move said player visually (probably some lerping involved)
 socket.on('move player', (move) => {
     const moved = networkPlayers.find(p => p.name === move.name);
 
@@ -185,12 +191,14 @@ socket.on('move player', (move) => {
     moved.setActual(move.x, move.y, move.angle);
 });
 
+// Method for spawning the local player and setting it up
 const spawnLocalPlayer = (name, avatar) => {
     let p = new Player(name, 0, 0, avatar);
     score = 0;
     player = p;
 }
 
+// Method for killing the local player and going through the neccessay procedere
 const killLocalPlayer = () => {
     if (score > highScore) {
         highScore = score;
@@ -202,12 +210,14 @@ const killLocalPlayer = () => {
     player.dead = true;
 }
 
+// Spawn a non-local player, AKA someone we cant control
 const spawnNetworkPlayer = (name, avatar, x = 0, y = 0) => {
     let np = new NetworkPlayer(name, avatar, x, y);
 
     networkPlayers.push(np);
 }
 
+// Load an avatar image into the avatarSprites
 const loadAvatar = (avatarPath) => {
     if (!avatarSprites[avatarPath]) {
         avatarSprites[avatarPath] = new Image();
@@ -217,6 +227,7 @@ const loadAvatar = (avatarPath) => {
     return avatarSprites[avatarPath];
 }
 
+// Remove/disable stuff and close the game when the user transfers to another screen
 const closeGame = () => {
     networkPlayers = [];
     gameRunning = false;

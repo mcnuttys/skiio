@@ -6,6 +6,7 @@ let cameraScale
 
 let tileSize;
 
+// Setup the cameras default values
 const setup = (cSize, wScale) => {
     canvasSize = cSize;
     worldScale = wScale;
@@ -16,6 +17,7 @@ const setup = (cSize, wScale) => {
     camY = 0;
 }
 
+// Method for converting a point in world space to screen space
 const toScreenSpace = (posX, posY) => {
     let x = posX - camX;
     let y = posY - camY;
@@ -25,11 +27,13 @@ const toScreenSpace = (posX, posY) => {
     return { x, y };
 }
 
+// Sets the camera position to a point
 const setPosition = (x, y) => {
     camX = x;
     camY = y;
 }
 
+// Lerp the camera towards a point at a given speed
 const follow = (dt, followSpeed, posX, posY) => {
     camX += (posX - camX) * dt * followSpeed;
     camY += (posY - camY) * dt * followSpeed;

@@ -1,6 +1,7 @@
 import * as helper from "../helper/helper.js";
 import * as profile from "./profile.js";
 
+// The market header
 const Market = (props) => {
     return (
         <div className="container">
@@ -17,6 +18,7 @@ const Market = (props) => {
     );
 }
 
+// Display all the market items in a grid, or handle there being none
 const MarketItems = (props) => {
     if (!props.market || props.market.length <= 0) {
         return (
@@ -39,6 +41,7 @@ const MarketItems = (props) => {
     )
 }
 
+// Draw the purchase button depending on if the item is owned or not.
 const purchaseItemButton = (props, item) => {
     let ownsItem = profile.ownsItem(item);
 
@@ -56,6 +59,7 @@ const purchaseItemButton = (props, item) => {
     )
 }
 
+// Updates the items displayed in the market
 const updateMarket = (filter, csrf) => {
     const action = `/market${(filter != 'unset') ? "?filter=" + filter : ''}`;
     console.dir("update");
@@ -69,6 +73,7 @@ const getToken = () => {
     return helper.sendGet("/getToken");
 }
 
+// Draws the market
 const drawMarket = async () => {
     ReactDOM.render(<Market />, document.querySelector('#content'));
 

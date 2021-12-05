@@ -2,15 +2,18 @@ const models = require('../models');
 
 const { Account, Market } = models;
 
+// Render the login page
 const loginPage = (req, res) => {
   res.render('login');
 };
 
+// Log the current user out
 const logout = (req, res) => {
   req.session.destroy();
   res.redirect('/');
 };
 
+// Method for handling login request
 const login = (request, response) => {
   const req = request;
   const res = response;
@@ -33,6 +36,8 @@ const login = (request, response) => {
   });
 };
 
+// Method for handling the signup request, do all the checks
+// Like with signup pretty much unchanged from the homework
 const signup = (request, response) => {
   const req = request;
   const res = response;
@@ -77,6 +82,8 @@ const signup = (request, response) => {
   });
 };
 
+// Gets the currently logged in users profile information
+// Also get the owned items as market items for the users viewing pleasure
 const getProfile = async (req, res) => {
   const profile = await Account.AccountModel.findOne({ _id: req.session.account._id }).lean();
 
@@ -100,6 +107,7 @@ const getProfile = async (req, res) => {
   );
 };
 
+// Given an item and a item type equipe the given item to a type slot on the profile
 const equipItem = async (req, res) => {
   if (req.body.id === '' || req.body.type === '') return res.status(400).json({ error: 'id and type required' });
 
@@ -124,6 +132,7 @@ const equipItem = async (req, res) => {
   return profile;
 };
 
+// Handler for the csrf token
 const getToken = (request, response) => {
   const req = request;
   const res = response;
@@ -135,6 +144,9 @@ const getToken = (request, response) => {
   res.json(csrfJSON);
 };
 
+// Handle changing the password
+// Check the old, and the news match
+// Use the methods provided to generate a new password and save
 const changePassword = async (req, res) => {
   const { pass } = req.body;
   const { newPass1 } = req.body;
