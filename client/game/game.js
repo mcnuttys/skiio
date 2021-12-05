@@ -44,7 +44,7 @@ const setup = (roomId, seed, _csrf) => {
 
     player = undefined;
     terrainManager = undefined;
-    cancelAnimationFrame(gameLoop);
+    clearInterval(gameLoop);
 
     input.setup();
     noise.seed(seed);
@@ -84,27 +84,21 @@ socket.on('resume setup', async (players) => {
         spawnNetworkPlayer(player.name, loadAvatar(player.avatar), player.x, player.y);
     });
 
-    loop();
+    gameLoop = setInterval(loop, 1000 / 60);
 })
 
 let dt = 1 / 60;
 let prevTime = 0;
-const loop = (timestamp) => {
-    if (gameRunning) {
-        gameLoop = window.requestAnimationFrame(loop);
-    } else {
-        return;
-    }
+const loop = () => {
+    // if (prevTime !== timestamp) {
+    //     dt = (timestamp - prevTime) / 1000;
+    // }
+    // prevTime = timestamp;
 
-    if (prevTime !== timestamp) {
-        dt = (timestamp - prevTime) / 1000;
-    }
-    prevTime = timestamp;
-
-    if (dt === "NaN" || dt > 0.1) {
-        dt = 1 / 60;
-        console.dir(dt);
-    }
+    // if (dt === "NaN" || dt > 0.1) {
+    //     dt = 1 / 60;
+    //     console.dir(dt);
+    // }
 
     ctx.clearRect(0, 0, size.width, size.height);
 
