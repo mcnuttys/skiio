@@ -85,31 +85,12 @@ class Chunk {
                 let tx = this.x + i;
                 let ty = this.y + j;
 
-                let tz = ty; //this.altitude(tx, ty);
+                let tz = ty;
 
                 let facing = { x: -tx, y: -ty }
 
-                // for (let x = -1; x < 2; x++) {
-                //     for (let y = -1; y < 2; y++) {
-                //         if (x != 0 && y != 0) {
-                //             let alt = this.altitude(tx + x, ty + y);
-                //             if (alt < tz) {
-                //                 facing.x += -x;
-                //                 facing.y += -y;
-                //             }
-                //             if (alt > tz) {
-                //                 facing.x += x;
-                //                 facing.y += y;
-                //             }
-                //         }
-                //     }
-                // }
-                // facing.x /= 8;
-                // facing.y /= 8;
-
                 facing = utils.normalize(facing.x, facing.y);
                 let perlin = noise.perlin2(tx / 10, ty / 10) + 0.5;
-                // console.dir(`${perlin}, ${tx}, ${ty}`)
 
                 if (utils.distance(tx, ty, 0, 0) < 10)
                     perlin = 0;

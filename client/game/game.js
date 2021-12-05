@@ -88,18 +88,7 @@ socket.on('resume setup', async (players) => {
 })
 
 let dt = 1 / 60;
-let prevTime = 0;
 const loop = () => {
-    // if (prevTime !== timestamp) {
-    //     dt = (timestamp - prevTime) / 1000;
-    // }
-    // prevTime = timestamp;
-
-    // if (dt === "NaN" || dt > 0.1) {
-    //     dt = 1 / 60;
-    //     console.dir(dt);
-    // }
-
     ctx.clearRect(0, 0, size.width, size.height);
 
     if (player && !player.dead) {

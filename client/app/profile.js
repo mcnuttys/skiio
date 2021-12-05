@@ -90,11 +90,21 @@ const getProfileData = async () => {
     const data = await helper.sendGet("/getProfile");
     profileData = data.profile;
 
-    profileData.ownedItems.push({ _id: "defaultavatar", name: "Default Avatar", type: "avatar", path: "/default" });
-    profileData.ownedItems.push({ _id: "defaultterrain", name: "Default Terrain", type: "terrain", path: "/default" });
+    profileData.ownedItems.splice(0, 0, { _id: "defaultavatar", name: "Default Avatar", type: "avatar", path: "/default" });
+    profileData.ownedItems.splice(1, 0, { _id: "defaultterrain", name: "Default Terrain", type: "terrain", path: "/default" });
 
     equipedAvatar = profileData.ownedItems.find(id => id._id === profileData.equipedAvatar);
     equipedTerrain = profileData.ownedItems.find(id => id._id === profileData.equipedTerrain);
+
+    console.dir(equipedAvatar);
+
+    if(!equipedAvatar) {
+        equipedAvatar = profileData.ownedItems[0];
+    }
+
+    if(!equipedTerrain) {
+        equipedTerrain = profileData.ownedItems[1];
+    }
 
     return profileData;
 }
