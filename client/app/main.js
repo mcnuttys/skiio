@@ -68,7 +68,7 @@ const Slopes = (props) => {
                             <tr key={slope.id}>
                                 <td>{slope.name}</td>
                                 <td>{slope.type}</td>
-                                <td>{slope.playerCount}</td>
+                                <td>{slope.players.length}</td>
                                 <td><button type="button" className="button" onClick={async () => {
                                     let s = await helper.sendGet("/getSlope?id=" + slope.id);
                                     const csrf = await getToken().then(data => data.csrfToken);
@@ -85,26 +85,31 @@ const Slopes = (props) => {
 
 const OpenResort = (props) => {
     return (
-        <div className="u-full-width">
+        <div>
             <h4>Open Resort</h4>
             <label htmlFor="resortName">Resort Name:</label>
             <input type="text" id="resortName" placeholder="Enter resort name here..."></input>
-            <label htmlFor="resortType">Resort Type:</label>
-            <select id="resortType">
-                <option value="alpine">Alpine</option>
-                <option value="mountain">Mountain</option>
-            </select>
+            <p name="errorMessage" className="errorMessage"></p>
             <button className="button-primary" onClick={async () => {
+                const errorMessage = document.querySelector(".errorMessage");
+
                 const data = {
                     name: document.querySelector("#resortName").value,
-                    type: document.querySelector("#resortType").value,
+                    type: "Alpine",
                     _csrf: props.csrf
                 }
 
-                const r = await helper.sendPost("/createResort", data);
-                const csrf = await getToken().then(data => data.csrfToken);
+                const resortError = (err) => {
+                    err.then(d => {
+                        errorMessage.textContent = d.error;
+                    })
+                }
 
-                game.setup(r.resort.id, r.resort.seed, csrf);
+                const r = await helper.sendPost("/createResort", data, resortError);
+
+                if (r.err) return;
+                
+                game.setup(r.resort.id, r.resort.seed, props.csrf);
             }}>Open Resort!</button>
         </div>
     )
@@ -124,6 +129,7 @@ const drawSlopes = () => {
     ReactDOM.render(<Slopes />, document.querySelector('#content'));
 
     helper.sendGet("/slopes").then(data => {
+        console.dir(data.slopes);
         ReactDOM.render(<Slopes slopes={data.slopes} />, document.querySelector('#content'));
     });
 }

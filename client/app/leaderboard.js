@@ -5,12 +5,7 @@ const Leaderboard = (props) => {
         return (
             <div>
                 <div className="row">
-                    <h4 className="one-half column">Leaderboard</h4>
-                    <select id="filterDropdown" onChange={updateLeaderboard} >
-                        <option value="unset">All</option>
-                        <option value="Alpine">Alpine</option>
-                        <option value="Mountain">Mountain</option>
-                    </select>
+                    <h4>Leaderboard</h4>
                 </div>
                 <p>No leaderboards to show!</p>
             </div>
@@ -21,12 +16,7 @@ const Leaderboard = (props) => {
         return (
             <div>
                 <div className="row">
-                    <h4 className="one-half column">Leaderboard</h4>
-                    <select id="filterDropdown" onChange={updateLeaderboard} >
-                        <option value="unset">All</option>
-                        <option value="Alpine">Alpine</option>
-                        <option value="Mountain">Mountain</option>
-                    </select>
+                    <h4>Leaderboard</h4>
                 </div>
                 <p>This leaderboard has no records to show!</p>
             </div>
@@ -36,12 +26,7 @@ const Leaderboard = (props) => {
     return (
         <div>
             <div className="row">
-                <h4 className="one-half column">Leaderboard</h4>
-                <select id="filterDropdown" onChange={updateLeaderboard} >
-                    <option value="unset">All</option>
-                    <option value="Alpine">Alpine</option>
-                    <option value="Mountain">Mountain</option>
-                </select>
+                <h4>Leaderboard</h4>
             </div>
             <table className="u-full-width">
                 <thead>

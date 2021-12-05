@@ -99,8 +99,7 @@ const loop = () => {
     }
 
     terrainManager.update(dt, player);
-    terrainManager.draw(ctx);
-
+    
     if (player) {
         player.update(dt, socket);
         player.draw(ctx);
@@ -126,6 +125,8 @@ const loop = () => {
         netP.update(dt);
         netP.draw(ctx);
     });
+    
+    terrainManager.draw(ctx);
 
     ctx.save();
     ctx.fillStyle = "black";
