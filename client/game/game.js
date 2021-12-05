@@ -1,6 +1,7 @@
 import * as profile from "../app/profile.js"
 import * as camera from "./camera.js"
 import * as input from "./inputManager.js"
+import * as helper from '../helper/helper.js'
 
 import { Player, NetworkPlayer } from "./player.js"
 import { TerrainManager } from "./terrainManager.js"
@@ -28,6 +29,7 @@ let highScore = 0;
 let score = 0;
 
 let gameLoop;
+let csrf;
 
 const Canvas = (props) => {
     return (
@@ -35,9 +37,10 @@ const Canvas = (props) => {
     )
 }
 
-const setup = (roomId, seed) => {
+const setup = (roomId, seed, _csrf) => {
     gameRunning = true;
     ReactDOM.render(<Canvas />, document.querySelector('#content'));
+    csrf = _csrf;
 
     player = undefined;
     terrainManager = undefined;
@@ -95,11 +98,13 @@ const loop = (timestamp) => {
 
     if (prevTime !== timestamp) {
         dt = (timestamp - prevTime) / 1000;
-        prevTime = timestamp;
     }
+    prevTime = timestamp;
 
-    if (dt === NaN || dt > 1)
-        return;
+    if (dt === "NaN" || dt > 0.1) {
+        dt = 1 / 60;
+        console.dir(dt);
+    }
 
     ctx.clearRect(0, 0, size.width, size.height);
 
@@ -143,7 +148,7 @@ const loop = (timestamp) => {
     ctx.fillStyle = "black";
     ctx.strokeStyle = "white";
     ctx.font = "25px Arial";
-    
+
     if (player && !player.dead) {
         // Draw Score Text
         if (Math.round(player.y) > score) {
@@ -203,8 +208,11 @@ const spawnLocalPlayer = (name, avatar) => {
 }
 
 const killLocalPlayer = () => {
-    if (score > highScore)
+    if (score > highScore) {
         highScore = score;
+        const data = { name: localUsername, type: "Alpine", score: score, _csrf: csrf };
+        helper.sendPost("/leaderboard", data);
+    }
 
     socket.emit('kill player', { room: localRoom });
     player.dead = true;

@@ -71,7 +71,8 @@ const Slopes = (props) => {
                                 <td>{slope.playerCount}</td>
                                 <td><button type="button" className="button" onClick={async () => {
                                     let s = await helper.sendGet("/getSlope?id=" + slope.id);
-                                    game.setup(s.slope.id, s.slope.seed);
+                                    const csrf = await getToken().then(data => data.csrfToken);
+                                    game.setup(s.slope.id, s.slope.seed, csrf);
                                 }}>Join Slope</button></td>
                             </tr>
                         );
@@ -101,8 +102,9 @@ const OpenResort = (props) => {
                 }
 
                 const r = await helper.sendPost("/createResort", data);
+                const csrf = await getToken().then(data => data.csrfToken);
 
-                game.setup(r.resort.id, r.resort.seed);
+                game.setup(r.resort.id, r.resort.seed, csrf);
             }}>Open Resort!</button>
         </div>
     )
