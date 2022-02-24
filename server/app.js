@@ -7,8 +7,10 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const expressHandlebars = require('express-handlebars');
 const session = require('express-session');
+const RedisStore = require('connect-redis')(session);
 const url = require('url');
 const csrf = require('csurf');
+const redis = require('redis');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
@@ -19,6 +21,24 @@ mongoose.connect(dbUrl, (err) => {
     console.log('Could not connect to the database');
     throw err;
   }
+});
+
+let redisURL = {
+  hostname: 'redis-15586.c89.us-east-1-3.ec2.cloud.redislabs.com',
+  port: '15586',
+};
+
+let redisPASS = 'S0hrI1LP3VrCFhhaX43bcZvPKOqUuMaU';
+
+if (process.env.REDISCLOUD_URL) {
+  redisURL = url.parse(process.env.REDISCLOUD_URL);
+  [, redisPASS] = redisURL.auth.split(':');
+}
+
+const redisClient = redis.createClient({
+  host: redisURL.hostname,
+  port: redisURL.port,
+  password: redisPASS,
 });
 
 const http = require('http');
@@ -34,7 +54,10 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(session({
   key: 'sessionid',
-  secret: 'Miner in IO',
+  store: new RedisStore({
+    client: redisClient,
+  }),
+  secret: 'Skiier in IO',
   resave: true,
   saveUninitialized: true,
   cookie: {
@@ -71,6 +94,6 @@ httpServer.listen(port, (err) => {
   console.log(`Listening on port ${port}`);
 });
 
-io.on('connection', function (socket) {
-  console.log("Connected succesfully to the socket ...");
-});
+// Add socket IO stuff pretty much just coverted the server type from before into an httpServer
+const gameServer = require('./gameServer.js');
+gameServer.setup(io);
