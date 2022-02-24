@@ -1,5 +1,5 @@
 {
-  "name": "skiio",
+  "name": "GenericMiningCo",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,20 +7,19 @@
     "start": "node ./server/app.js",
     "webpackLogin": "webpack --config webpack.config.js --entry ./client/login/login.js --output-filename loginBundle.js -o ./hosted",
     "webpackMain": "webpack --config webpack.config.js --entry ./client/app/main.js --output-filename appBundle.js -o ./hosted",
-    "webpackAdmin": "webpack --config webpack.config.js --entry ./client/helper/admin.js --output-filename adminBundle.js -o ./hosted",
     "pretest": "eslint ./server --fix",
     "test": "echo \"Tests complete\""
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mcnuttys/skiio.git"
+    "url": "git+https://github.com/mcnuttys/GenericMiningCo.git"
   },
   "author": "Isaac McNutt",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/mcnuttys/skiio/issues"
+    "url": "https://github.com/mcnuttys/GenericMiningCo/issues"
   },
-  "homepage": "https://github.com/mcnuttys/skiio#readme",
+  "homepage": "https://github.com/mcnuttys/GenericMiningCo#readme",
   "devDependencies": {
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.0",
@@ -45,7 +44,6 @@
     "express-session": "^1.17.2",
     "helmet": "^4.6.0",
     "mongoose": "^6.0.12",
-    "redis": "^3.1.2",
     "serve-favicon": "^2.5.0",
     "socket.io": "^4.4.0",
     "underscore": "^1.13.1"
